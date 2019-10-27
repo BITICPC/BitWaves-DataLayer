@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>BitWaves.Data</id>
+    <version>0.9.0</version>
+    <title>BitWaves.Data</title>
+    <authors>Lancern</authors>
+    <owners>BITICPC</owners>
+    <description>Definitions of data layer abstractions used across BitWaves.</description>
+    <projectUrl>https://github.com/BITICPC/BitWaves-DataLayer</projectUrl>
+    <copyright>Copyright 2019 BITICPC.</copyright>
+  </metadata>
+</package>

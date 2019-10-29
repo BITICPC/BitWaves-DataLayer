@@ -29,6 +29,7 @@
       <PackageReference Include="MongoDB.Driver" Version="2.9.2" />
       <PackageReference Include="MongoDB.Driver.Core" Version="2.9.2" />
       <PackageReference Include="MongoDB.Driver.GridFS" Version="2.9.2" />
+      <PackageReference Include="System.IO.Compression.ZipFile" Version="4.3.0" />
     </ItemGroup>
 
 </Project>

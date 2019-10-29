@@ -72,6 +72,11 @@ namespace BitWaves.Data.Entities
         public int TotalSolvedUsers { get; set; }
 
         /// <summary>
+        /// 获取或设置题目的最后一次提交的时间。
+        /// </summary>
+        public DateTime LastSubmissionTime { get; set; }
+
+        /// <summary>
         /// 获取或设置题目的描述信息。
         /// </summary>
         public ProblemDescription Description { get; set; }

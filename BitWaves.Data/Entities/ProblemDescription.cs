@@ -31,10 +31,5 @@ namespace BitWaves.Data.Entities
         /// 获取或设置题目的提示信息。
         /// </summary>
         public string Notes { get; set; }
-
-        /// <summary>
-        /// 获取或设置题目的来源信息。
-        /// </summary>
-        public string Source { get; set; }
     }
 }

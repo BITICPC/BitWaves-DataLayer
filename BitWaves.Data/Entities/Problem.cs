@@ -32,6 +32,11 @@ namespace BitWaves.Data.Entities
         public string Author { get; set; }
 
         /// <summary>
+        /// 获取或设置题目的来源。
+        /// </summary>
+        public string Source { get; set; }
+
+        /// <summary>
         /// 获取或设置题目的创建时间。
         /// </summary>
         public DateTime CreationTime { get; set; }

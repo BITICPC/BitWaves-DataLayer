@@ -79,7 +79,13 @@ namespace BitWaves.Data
                     Builders<Problem>.IndexKeys.Descending(problem => problem.TotalSubmissions)),
                 // AcceptedSubmissions 上的递减索引
                 new CreateIndexModel<Problem>(
-                    Builders<Problem>.IndexKeys.Descending(problem => problem.AcceptedSubmissions))
+                    Builders<Problem>.IndexKeys.Descending(problem => problem.AcceptedSubmissions)),
+                // TotalAttemptedUsers 上的递减索引
+                new CreateIndexModel<Problem>(
+                    Builders<Problem>.IndexKeys.Descending(problem => problem.TotalAttemptedUsers)),
+                // TotalSolvedUsers 上的递减索引
+                new CreateIndexModel<Problem>(
+                    Builders<Problem>.IndexKeys.Descending(problem => problem.TotalSolvedUsers))
             };
 
             _repo.Problems.Indexes.CreateMany(indexesList);

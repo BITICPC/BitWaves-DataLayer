@@ -62,6 +62,16 @@ namespace BitWaves.Data.Entities
         public int AcceptedSubmissions { get; set; }
 
         /// <summary>
+        /// 获取或设置总的尝试解答该题目的用户数量。
+        /// </summary>
+        public int TotalAttemptedUsers { get; set; }
+
+        /// <summary>
+        /// 获取或设置总的成功解答该题目的用户数量。
+        /// </summary>
+        public int TotalSolvedUsers { get; set; }
+
+        /// <summary>
         /// 获取或设置题目的描述信息。
         /// </summary>
         public ProblemDescription Description { get; set; }

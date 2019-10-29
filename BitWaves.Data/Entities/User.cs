@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Security.Cryptography;
 using System.Text;
 using MongoDB.Bson;
@@ -88,6 +89,16 @@ namespace BitWaves.Data.Entities
         public bool IsAdmin { get; set; }
 
         /// <summary>
+        /// 获取或设置用户尝试过的题目的 ID。
+        /// </summary>
+        public List<ObjectId> AttemptedProblems { get; set; }
+
+        /// <summary>
+        /// 获取或设置用户成功解答出的题目的 ID。
+        /// </summary>
+        public List<ObjectId> SolvedProblems { get; set; }
+
+        /// <summary>
         /// 设置用户密码。
         /// </summary>
         /// <param name="password">用户密码明文。</param>
@@ -119,7 +130,9 @@ namespace BitWaves.Data.Entities
             return new User
             {
                 Id = ObjectId.GenerateNewId(),
-                JoinTime = DateTime.UtcNow
+                JoinTime = DateTime.UtcNow,
+                AttemptedProblems = new List<ObjectId>(),
+                SolvedProblems = new List<ObjectId>()
             };
         }
 

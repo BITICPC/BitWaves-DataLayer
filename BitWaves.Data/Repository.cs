@@ -38,6 +38,11 @@ namespace BitWaves.Data
         public IMongoDatabase Database { get; }
 
         /// <summary>
+        /// 获取静态内容数据集。
+        /// </summary>
+        public IMongoCollection<Content> Contents => Database.GetCollection<Content>("Contents");
+
+        /// <summary>
         /// 获取用户数据集。
         /// </summary>
         public IMongoCollection<User> Users => Database.GetCollection<User>("Users");

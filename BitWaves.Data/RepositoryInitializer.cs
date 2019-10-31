@@ -33,6 +33,25 @@ namespace BitWaves.Data
         }
 
         /// <summary>
+        /// 初始化静态内容数据集。
+        /// </summary>
+        private void InitializeContentCollection()
+        {
+            _logger?.LogTrace("初始化静态内容数据集...");
+
+            var indexesList = new List<CreateIndexModel<Content>>
+            {
+                // CreationTime 上的递减索引
+                new CreateIndexModel<Content>(Builders<Content>.IndexKeys.Descending(user => user.CreationTime)),
+                // MimeType 上的哈希索引
+                new CreateIndexModel<Content>(Builders<Content>.IndexKeys.Hashed(user => user.MimeType))
+            };
+
+            _repo.Contents.Indexes.CreateMany(indexesList);
+            _logger?.LogDebug("在静态内容数据集上创建了{0}个索引", indexesList.Count);
+        }
+
+        /// <summary>
         /// 初始化用户数据集。
         /// </summary>
         private void InitializeUserCollection()
@@ -102,6 +121,7 @@ namespace BitWaves.Data
         {
             _logger?.LogTrace("初始化 BitWaves 数据库...");
 
+            InitializeContentCollection();
             InitializeUserCollection();
             InitializeProblemCollection();
         }

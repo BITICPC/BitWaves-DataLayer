@@ -42,9 +42,11 @@ namespace BitWaves.Data
             var indexesList = new List<CreateIndexModel<Content>>
             {
                 // CreationTime 上的递减索引
-                new CreateIndexModel<Content>(Builders<Content>.IndexKeys.Descending(user => user.CreationTime)),
+                new CreateIndexModel<Content>(Builders<Content>.IndexKeys.Descending(content => content.CreationTime)),
+                // Name 上的哈希索引
+                new CreateIndexModel<Content>(Builders<Content>.IndexKeys.Hashed(content => content.Name)),
                 // MimeType 上的哈希索引
-                new CreateIndexModel<Content>(Builders<Content>.IndexKeys.Hashed(user => user.MimeType))
+                new CreateIndexModel<Content>(Builders<Content>.IndexKeys.Hashed(content => content.MimeType))
             };
 
             _repo.Contents.Indexes.CreateMany(indexesList);

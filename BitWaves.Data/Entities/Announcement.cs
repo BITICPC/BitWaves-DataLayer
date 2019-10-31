@@ -1,7 +1,7 @@
 using System;
 using MongoDB.Bson;
 
-namespace BitWaves.Data
+namespace BitWaves.Data.Entities
 {
     /// <summary>
     /// 表示一个全站公告。

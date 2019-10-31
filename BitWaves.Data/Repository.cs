@@ -48,6 +48,11 @@ namespace BitWaves.Data
         public IMongoCollection<User> Users => Database.GetCollection<User>("Users");
 
         /// <summary>
+        /// 获取全站公告数据集。
+        /// </summary>
+        public IMongoCollection<Announcement> Announcements => Database.GetCollection<Announcement>("Announcements");
+
+        /// <summary>
         /// 获取题目数据集。
         /// </summary>
         public IMongoCollection<Problem> Problems => Database.GetCollection<Problem>("Problems");

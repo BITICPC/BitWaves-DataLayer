@@ -78,6 +78,26 @@ namespace BitWaves.Data
             _logger?.LogDebug("在用户数据集上创建了{0}个索引。", indexesList.Count);
         }
 
+        /// <summary>
+        /// 初始化全站公告数据集。
+        /// </summary>
+        private void InitializeAnnouncementCollection()
+        {
+            _logger?.LogTrace("初始化全站公告数据集...");
+
+            var indexesList = new List<CreateIndexModel<Announcement>>
+            {
+                new CreateIndexModel<Announcement>(
+                    Builders<Announcement>.IndexKeys.Descending(announcement => announcement.LastUpdateTime))
+            };
+
+            _repo.Announcements.Indexes.CreateMany(indexesList);
+            _logger?.LogDebug("在全站公告数据集上创建了{0}个索引。", indexesList.Count);
+        }
+
+        /// <summary>
+        /// 初始化题目数据集。
+        /// </summary>
         private void InitializeProblemCollection()
         {
             _logger?.LogTrace("初始化题目数据集...");
@@ -123,6 +143,7 @@ namespace BitWaves.Data
 
             InitializeContentCollection();
             InitializeUserCollection();
+            InitializeAnnouncementCollection();
             InitializeProblemCollection();
         }
 

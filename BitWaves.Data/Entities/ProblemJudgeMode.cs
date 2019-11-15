@@ -8,16 +8,16 @@ namespace BitWaves.Data.Entities
         /// <summary>
         /// 标准评测模式。
         /// </summary>
-        Standard = 1,
+        Standard,
 
         /// <summary>
         /// 用户提供 Special Judge 的评测模式。
         /// </summary>
-        SpecialJudge = 2,
+        SpecialJudge,
 
         /// <summary>
         /// 用户提供交互器的评测模式。
         /// </summary>
-        Interactive = 3
+        Interactive,
     }
 }

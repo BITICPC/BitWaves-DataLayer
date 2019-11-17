@@ -24,7 +24,7 @@ namespace BitWaves.Data
             Contract.NotNull(connectionString, nameof(connectionString));
 
             MongoClient = new MongoClient(connectionString);
-            Database = MongoClient.GetDatabase("BitWaves");
+            Database = MongoClient.GetDatabase(RepositoryNames.Repository);
         }
 
         /// <summary>
@@ -40,22 +40,28 @@ namespace BitWaves.Data
         /// <summary>
         /// 获取静态内容数据集。
         /// </summary>
-        public IMongoCollection<Content> Contents => Database.GetCollection<Content>("Contents");
+        public IMongoCollection<Content> Contents => Database.GetCollection<Content>(RepositoryNames.Contents);
 
         /// <summary>
         /// 获取用户数据集。
         /// </summary>
-        public IMongoCollection<User> Users => Database.GetCollection<User>("Users");
+        public IMongoCollection<User> Users => Database.GetCollection<User>(RepositoryNames.Users);
 
         /// <summary>
         /// 获取全站公告数据集。
         /// </summary>
-        public IMongoCollection<Announcement> Announcements => Database.GetCollection<Announcement>("Announcements");
+        public IMongoCollection<Announcement> Announcements => Database.GetCollection<Announcement>(
+            RepositoryNames.Announcements);
 
         /// <summary>
         /// 获取题目数据集。
         /// </summary>
-        public IMongoCollection<Problem> Problems => Database.GetCollection<Problem>("Problems");
+        public IMongoCollection<Problem> Problems => Database.GetCollection<Problem>(RepositoryNames.Problems);
+
+        /// <summary>
+        /// 获取语言数据集。
+        /// </summary>
+        public IMongoCollection<Language> Languages => Database.GetCollection<Language>(RepositoryNames.Languages);
 
         /// <summary>
         /// 获取 BitWaves 的 MongoDB 实例上的 GridFS 数据集。

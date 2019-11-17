@@ -137,6 +137,14 @@ namespace BitWaves.Data
         }
 
         /// <summary>
+        /// 初始化语言数据集。
+        /// </summary>
+        private void InitializeLanguageCollection()
+        {
+            _logger?.LogTrace("初始化语言数据集...");
+        }
+
+        /// <summary>
         /// 初始化数据库。
         /// </summary>
         public void Initialize()
@@ -147,6 +155,7 @@ namespace BitWaves.Data
             InitializeUserCollection();
             InitializeAnnouncementCollection();
             InitializeProblemCollection();
+            InitializeLanguageCollection();
         }
 
         /// <summary>

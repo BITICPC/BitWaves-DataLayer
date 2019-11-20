@@ -31,6 +31,11 @@ namespace BitWaves.Data
         public const string Problems = "Problems";
 
         /// <summary>
+        /// 题目测试数据文件的 GridFS Bucket 名称。
+        /// </summary>
+        public const string TestDataArchiveBucket = "TestDataArchives";
+
+        /// <summary>
         /// 语言数据集的名称。
         /// </summary>
         public const string Languages = "Languages";

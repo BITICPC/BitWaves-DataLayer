@@ -59,14 +59,15 @@ namespace BitWaves.Data
         public IMongoCollection<Problem> Problems => Database.GetCollection<Problem>(RepositoryNames.Problems);
 
         /// <summary>
+        /// 获取包含题目测试数据文件的 GridFS Bucket。
+        /// </summary>
+        public IGridFSBucket TestDataArchives =>
+            new GridFSBucket(Database, new GridFSBucketOptions { BucketName = RepositoryNames.TestDataArchiveBucket });
+
+        /// <summary>
         /// 获取语言数据集。
         /// </summary>
         public IMongoCollection<Language> Languages => Database.GetCollection<Language>(RepositoryNames.Languages);
-
-        /// <summary>
-        /// 获取 BitWaves 的 MongoDB 实例上的 GridFS 数据集。
-        /// </summary>
-        public IGridFSBucket Files => new GridFSBucket(Database);
     }
 
     namespace DependencyInjection

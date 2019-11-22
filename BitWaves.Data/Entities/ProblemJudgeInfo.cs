@@ -15,7 +15,7 @@ namespace BitWaves.Data.Entities
         /// <summary>
         /// 当评测模式为 Standard 时，获取或设置内建答案检查器的评测选项。
         /// </summary>
-        public BuiltinCheckerOptions? CheckerOptions { get; set; }
+        public BuiltinCheckerOptions? BuiltinCheckerOptions { get; set; }
 
         /// <summary>
         /// 获取或设置题目在单个测试点上的时间限制，单位为毫秒。

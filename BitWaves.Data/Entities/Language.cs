@@ -10,6 +10,43 @@ namespace BitWaves.Data.Entities
     public sealed class Language
     {
         /// <summary>
+        /// 初始化 <see cref="Language"/> 类的新实例。
+        /// </summary>
+        private Language()
+        {
+        }
+
+        /// <summary>
+        /// 初始化 <see cref="Language"/> 类的新实例。
+        /// </summary>
+        /// <param name="identifier">语言标识符。</param>
+        /// <param name="dialect">语言的方言。</param>
+        /// <param name="version">语言的版本。</param>
+        /// <param name="displayName">语言的显示名称。</param>
+        /// <exception cref="ArgumentNullException">
+        ///     <paramref name="identifier"/> 为 null
+        ///     或
+        ///     <paramref name="dialect"/> 为 null
+        ///     或
+        ///     <paramref name="version"/> 为 null
+        ///     或
+        ///     <paramref name="displayName"/> 为 null。
+        /// </exception>
+        public Language(string identifier, string dialect, string version, string displayName)
+        {
+            Contract.NotNull(identifier, nameof(identifier));
+            Contract.NotNull(dialect, nameof(dialect));
+            Contract.NotNull(version, nameof(version));
+            Contract.NotNull(displayName, nameof(displayName));
+
+            Id = ObjectId.GenerateNewId();
+            Identifier = identifier;
+            Dialect = dialect;
+            Version = version;
+            DisplayName = displayName;
+        }
+
+        /// <summary>
         /// 获取语言的全局唯一 ID。
         /// </summary>
         [BsonId]
@@ -34,39 +71,5 @@ namespace BitWaves.Data.Entities
         /// 获取或设置语言的用户友好名称。
         /// </summary>
         public string DisplayName { get; set; }
-
-        /// <summary>
-        /// 创建一个新的 <see cref="Language"/> 实例对象。
-        /// </summary>
-        /// <param name="identifier">语言标识符。</param>
-        /// <param name="dialect">方言标识符。</param>
-        /// <param name="version">版本标识符。</param>
-        /// <param name="displayName">语言的显示名称。</param>
-        /// <returns>新创建的 <see cref="Language"/> 实例对象。</returns>
-        /// <exception cref="ArgumentNullException">
-        ///     <paramref name="identifier"/> 为 null
-        ///     或
-        ///     <paramref name="dialect"/> 为 null
-        ///     或
-        ///     <paramref name="version"/> 为 null
-        ///     或
-        ///     <paramref name="displayName"/> 为 null
-        /// </exception>
-        public static Language Create(string identifier, string dialect, string version, string displayName)
-        {
-            Contract.NotNull(identifier, nameof(identifier));
-            Contract.NotNull(dialect, nameof(dialect));
-            Contract.NotNull(version, nameof(version));
-            Contract.NotNull(displayName, nameof(displayName));
-
-            return new Language
-            {
-                Id = ObjectId.GenerateNewId(),
-                Identifier = identifier,
-                Dialect = dialect,
-                Version = version,
-                DisplayName = displayName
-            };
-        }
     }
 }

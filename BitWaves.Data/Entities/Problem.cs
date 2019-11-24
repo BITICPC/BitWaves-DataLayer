@@ -11,6 +11,38 @@ namespace BitWaves.Data.Entities
     public sealed class Problem
     {
         /// <summary>
+        /// 初始化 <see cref="Problem"/> 类的新实例。
+        /// </summary>
+        private Problem()
+        {
+        }
+
+        /// <summary>
+        /// 初始化 <see cref="Problem"/> 类的新实例。
+        /// </summary>
+        /// <param name="title">题目标题。</param>
+        /// <param name="author">题目作者。</param>
+        /// <exception cref="ArgumentNullException">
+        ///     <paramref name="title"/> 为 null
+        ///     或
+        ///     <paramref name="author"/> 为 null。
+        /// </exception>
+        public Problem(string title, string author)
+        {
+            Contract.NotNull(title, nameof(title));
+            Contract.NotNull(author, nameof(author));
+
+            Id = ObjectId.GenerateNewId();
+            Title = title;
+            Author = author;
+            CreationTime = DateTime.UtcNow;
+            LastUpdateTime = DateTime.UtcNow;
+            Tags = new List<string>();
+            Description = new ProblemDescription();
+            JudgeInfo = new ProblemJudgeInfo();
+        }
+
+        /// <summary>
         /// 获取题目实体对象 ID。
         /// </summary>
         [BsonId]
@@ -90,22 +122,5 @@ namespace BitWaves.Data.Entities
         /// 获取或设置题目的评测相关信息。
         /// </summary>
         public ProblemJudgeInfo JudgeInfo { get; set; }
-
-        /// <summary>
-        /// 创建 <see cref="Problem"/> 的空有效实例。
-        /// </summary>
-        /// <returns>新创建的 <see cref="Problem"/> 的空有效实例。</returns>
-        public static Problem Create()
-        {
-            return new Problem
-            {
-                Id = ObjectId.GenerateNewId(),
-                CreationTime = DateTime.UtcNow,
-                LastUpdateTime = DateTime.UtcNow,
-                Tags = new List<string>(),
-                Description = new ProblemDescription(),
-                JudgeInfo = new ProblemJudgeInfo()
-            };
-        }
     }
 }

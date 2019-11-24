@@ -8,6 +8,13 @@ namespace BitWaves.Data.Entities
     public sealed class ProblemJudgeInfo
     {
         /// <summary>
+        /// 初始化 <see cref="ProblemJudgeInfo"/> 类的新实例。
+        /// </summary>
+        internal ProblemJudgeInfo()
+        {
+        }
+
+        /// <summary>
         /// 获取或设置题目的评测模式。
         /// </summary>
         public ProblemJudgeMode JudgeMode { get; set; }

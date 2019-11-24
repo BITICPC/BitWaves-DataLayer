@@ -8,6 +8,14 @@ namespace BitWaves.Data.Entities
     public sealed class ProblemDescription
     {
         /// <summary>
+        /// 初始化 <see cref="ProblemDescription"/> 类的新实例。
+        /// </summary>
+        internal ProblemDescription()
+        {
+            SampleTests = new List<ProblemSampleTest>();
+        }
+
+        /// <summary>
         /// 获取或设置题目背景描述。
         /// </summary>
         public string Legend { get; set; }

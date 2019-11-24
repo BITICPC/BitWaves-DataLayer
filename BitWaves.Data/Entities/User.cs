@@ -1,7 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Security.Cryptography;
-using System.Text;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
@@ -12,6 +10,36 @@ namespace BitWaves.Data.Entities
     /// </summary>
     public sealed class User
     {
+        /// <summary>
+        /// 初始化 <see cref="User"/> 类的新实例。
+        /// </summary>
+        private User()
+        {
+        }
+
+        /// <summary>
+        /// 初始化 <see cref="User"/> 类的新实例。
+        /// </summary>
+        /// <param name="username">用户名。</param>
+        /// <param name="passwordHash">用户密码哈希值。</param>
+        /// <exception cref="ArgumentNullException">
+        ///     <paramref name="username"/> 为 null
+        ///     或
+        ///     <paramref name="passwordHash"/> 为 null。
+        /// </exception>
+        public User(string username, byte[] passwordHash)
+        {
+            Contract.NotNull(username, nameof(username));
+            Contract.NotNull(passwordHash, nameof(passwordHash));
+
+            Id = ObjectId.GenerateNewId();
+            Username = username;
+            PasswordHash = passwordHash;
+            JoinTime = DateTime.UtcNow;
+            AttemptedProblems = new List<ObjectId>();
+            SolvedProblems = new List<ObjectId>();
+        }
+
         /// <summary>
         /// 获取用户 ID。
         /// </summary>
@@ -97,60 +125,5 @@ namespace BitWaves.Data.Entities
         /// 获取或设置用户成功解答出的题目的 ID。
         /// </summary>
         public List<ObjectId> SolvedProblems { get; set; }
-
-        /// <summary>
-        /// 设置用户密码。
-        /// </summary>
-        /// <param name="password">用户密码明文。</param>
-        /// <exception cref="ArgumentNullException"><paramref name="password"/> 为 null。</exception>
-        public void SetPassword(string password)
-        {
-            PasswordHash = GetPasswordHash(password);
-        }
-
-        /// <summary>
-        /// 测试给定的密码的哈希值是否与保存的密码哈希值一致。
-        /// </summary>
-        /// <param name="password">要测试的密码。</param>
-        /// <returns>给定密码的哈希值是否与保存的密码哈希值一致。</returns>
-        /// <exception cref="ArgumentNullException"><paramref name="password"/> 为 null。</exception>
-        public bool Challenge(string password)
-        {
-            Contract.NotNull(password, nameof(password));
-
-            return BufferUtils.Equals(PasswordHash, GetPasswordHash(password));
-        }
-
-        /// <summary>
-        /// 创建一个新的 <see cref="User"/> 对象。
-        /// </summary>
-        /// <returns>新创建的 <see cref="User"/> 对象。</returns>
-        public static User Create()
-        {
-            return new User
-            {
-                Id = ObjectId.GenerateNewId(),
-                JoinTime = DateTime.UtcNow,
-                AttemptedProblems = new List<ObjectId>(),
-                SolvedProblems = new List<ObjectId>()
-            };
-        }
-
-        /// <summary>
-        /// 获取给定密码的哈希值。
-        /// </summary>
-        /// <param name="password">要哈希的密码明文。</param>
-        /// <returns>密码哈希值。</returns>
-        /// <exception cref="ArgumentNullException"><paramref name="password"/> 为 null。</exception>
-        private static byte[] GetPasswordHash(string password)
-        {
-            Contract.NotNull(password, nameof(password));
-
-            var encoded = Encoding.UTF8.GetBytes(password);
-            using (var hasher = SHA256.Create())
-            {
-                return hasher.ComputeHash(encoded);
-            }
-        }
     }
 }

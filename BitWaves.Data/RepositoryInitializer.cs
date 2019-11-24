@@ -146,7 +146,7 @@ namespace BitWaves.Data
             var indexesList = new List<CreateIndexModel<ProblemTag>>
             {
                 // Name 上的唯一哈希索引
-                new CreateIndexModel<ProblemTag>(Builders<ProblemTag>.IndexKeys.Hashed(tag => tag.Name),
+                new CreateIndexModel<ProblemTag>(Builders<ProblemTag>.IndexKeys.Ascending(tag => tag.Name),
                     new CreateIndexOptions { Unique = true })
             };
 

@@ -145,7 +145,9 @@ namespace BitWaves.Data
 
             var indexesList = new List<CreateIndexModel<ProblemTag>>
             {
-                new CreateIndexModel<ProblemTag>(Builders<ProblemTag>.IndexKeys.Hashed(tag => tag.Name))
+                // Name 上的唯一哈希索引
+                new CreateIndexModel<ProblemTag>(Builders<ProblemTag>.IndexKeys.Hashed(tag => tag.Name),
+                    new CreateIndexOptions { Unique = true })
             };
 
             _repo.ProblemTags.Indexes.CreateMany(indexesList);
@@ -171,6 +173,7 @@ namespace BitWaves.Data
             InitializeUserCollection();
             InitializeAnnouncementCollection();
             InitializeProblemCollection();
+            InitializeProblemTagsCollection();
             InitializeLanguageCollection();
         }
 

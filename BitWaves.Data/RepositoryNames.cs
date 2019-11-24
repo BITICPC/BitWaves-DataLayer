@@ -36,6 +36,11 @@ namespace BitWaves.Data
         public const string TestDataArchiveBucket = "TestDataArchives";
 
         /// <summary>
+        /// 题目标签数据字典的名称。
+        /// </summary>
+        public const string ProblemTags = "ProblemTags";
+
+        /// <summary>
         /// 语言数据集的名称。
         /// </summary>
         public const string Languages = "Languages";

@@ -65,6 +65,12 @@ namespace BitWaves.Data
             new GridFSBucket(Database, new GridFSBucketOptions { BucketName = RepositoryNames.TestDataArchiveBucket });
 
         /// <summary>
+        /// 获取题目标签数据字典。
+        /// </summary>
+        public IMongoCollection<ProblemTag> ProblemTags =>
+            Database.GetCollection<ProblemTag>(RepositoryNames.ProblemTags);
+
+        /// <summary>
         /// 获取语言数据集。
         /// </summary>
         public IMongoCollection<Language> Languages => Database.GetCollection<Language>(RepositoryNames.Languages);

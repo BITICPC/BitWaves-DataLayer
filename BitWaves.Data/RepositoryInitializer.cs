@@ -137,6 +137,22 @@ namespace BitWaves.Data
         }
 
         /// <summary>
+        /// 初始化题目标签数据字典。
+        /// </summary>
+        private void InitializeProblemTagsCollection()
+        {
+            _logger?.LogTrace("初始化题目标签数据字典...");
+
+            var indexesList = new List<CreateIndexModel<ProblemTag>>
+            {
+                new CreateIndexModel<ProblemTag>(Builders<ProblemTag>.IndexKeys.Hashed(tag => tag.Name))
+            };
+
+            _repo.ProblemTags.Indexes.CreateMany(indexesList);
+            _logger?.LogDebug("在题目标签数据字典上创建了 {0} 个索引。", indexesList.Count);
+        }
+
+        /// <summary>
         /// 初始化语言数据集。
         /// </summary>
         private void InitializeLanguageCollection()

@@ -106,10 +106,9 @@ namespace BitWaves.Data
 
             var indexesList = new List<CreateIndexModel<Problem>>
             {
-                // ArchiveId 上的递增索引
-                // 注意：不能在 ArchiveId 上创建唯一性索引，因为在 ArchiveId 上可能有多个实体值为 null
-                // ArchiveId 上的唯一性由应用端保证
-                new CreateIndexModel<Problem>(Builders<Problem>.IndexKeys.Ascending(problem => problem.ArchiveId)),
+                // ArchiveId 上的稀疏递增唯一索引
+                new CreateIndexModel<Problem>(Builders<Problem>.IndexKeys.Ascending(problem => problem.ArchiveId),
+                                              new CreateIndexOptions { Sparse = true, Unique = true }),
                 // LastUpdateTime 上的递减索引
                 new CreateIndexModel<Problem>(
                     Builders<Problem>.IndexKeys.Descending(problem => problem.LastUpdateTime)),

@@ -51,6 +51,7 @@ namespace BitWaves.Data.Entities
         /// <summary>
         /// 获取或设置题目在 Problem Archive 中的 ID。若题目不在 Problem Archive 中，该属性值应为 null。
         /// </summary>
+        [BsonIgnoreIfDefault]
         public int? ArchiveId { get; set; }
 
         /// <summary>

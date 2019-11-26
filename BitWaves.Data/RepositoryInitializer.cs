@@ -166,8 +166,8 @@ namespace BitWaves.Data
                 new CreateIndexModel<Submission>(Builders<Submission>.IndexKeys.Hashed(sub => sub.Author)),
                 // ProblemId 上的递增索引
                 new CreateIndexModel<Submission>(Builders<Submission>.IndexKeys.Ascending(sub => sub.ProblemId)),
-                // Language.Identifier 上的哈希索引
-                new CreateIndexModel<Submission>(Builders<Submission>.IndexKeys.Hashed(sub => sub.Language.Identifier)),
+                // LanguageId 上的哈希索引
+                new CreateIndexModel<Submission>(Builders<Submission>.IndexKeys.Hashed(sub => sub.LanguageId)),
                 // CreationTime 上的递减索引
                 new CreateIndexModel<Submission>(Builders<Submission>.IndexKeys.Descending(sub => sub.CreationTime)),
                 // Status 上的递增索引

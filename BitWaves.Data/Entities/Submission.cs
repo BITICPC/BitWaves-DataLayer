@@ -21,26 +21,23 @@ namespace BitWaves.Data.Entities
         /// </summary>
         /// <param name="author">创建提交的作者。</param>
         /// <param name="problemId">提交的题目 ID。</param>
-        /// <param name="language">提交所使用的语言三元组。</param>
+        /// <param name="languageId">提交所使用的语言的全局唯一 ID。</param>
         /// <param name="code">提交的源代码。</param>
         /// <exception cref="ArgumentNullException">
         ///     <paramref name="author"/> 为 null
         ///     或
-        ///     <paramref name="language"/> 为 null
-        ///     或
         ///     <paramref name="code"/> 为 null。
         /// </exception>
-        public Submission(string author, ObjectId problemId, LanguageTriple language, string code)
+        public Submission(string author, ObjectId problemId, ObjectId languageId, string code)
         {
             Contract.NotNull(author, nameof(author));
-            Contract.NotNull(language, nameof(language));
             Contract.NotNull(code, nameof(code));
 
             Id = ObjectId.GenerateNewId();
             Author = author;
             ProblemId = problemId;
             CreationTime = DateTime.UtcNow;
-            Language = language;
+            LanguageId = languageId;
             Code = code;
         }
 
@@ -68,12 +65,12 @@ namespace BitWaves.Data.Entities
         /// <summary>
         /// 获取或设置提交的评测时间。
         /// </summary>
-        public DateTime JudgeTime { get; set; }
+        public DateTime? JudgeTime { get; set; }
 
         /// <summary>
-        /// 获取提交所使用的语言。
+        /// 获取或设置提交的语言的全局唯一 ID。
         /// </summary>
-        public LanguageTriple Language { get; private set; }
+        public ObjectId LanguageId { get; private set; }
 
         /// <summary>
         /// 获取提交的源代码。

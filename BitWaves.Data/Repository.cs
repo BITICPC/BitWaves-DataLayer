@@ -71,6 +71,12 @@ namespace BitWaves.Data
             Database.GetCollection<ProblemTag>(RepositoryNames.ProblemTags);
 
         /// <summary>
+        /// 获取用户提交数据集。
+        /// </summary>
+        public IMongoCollection<Submission> Submissions =>
+            Database.GetCollection<Submission>(RepositoryNames.Submissions);
+
+        /// <summary>
         /// 获取语言数据集。
         /// </summary>
         public IMongoCollection<Language> Languages => Database.GetCollection<Language>(RepositoryNames.Languages);

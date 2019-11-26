@@ -154,6 +154,33 @@ namespace BitWaves.Data
         }
 
         /// <summary>
+        /// 初始化用户提交数据集。
+        /// </summary>
+        private void InitializeSubmissionCollection()
+        {
+            _logger?.LogTrace("初始化用户提交数据集...");
+
+            var indexesList = new List<CreateIndexModel<Submission>>
+            {
+                // Author 上的哈希索引
+                new CreateIndexModel<Submission>(Builders<Submission>.IndexKeys.Hashed(sub => sub.Author)),
+                // ProblemId 上的递增索引
+                new CreateIndexModel<Submission>(Builders<Submission>.IndexKeys.Ascending(sub => sub.ProblemId)),
+                // Language.Identifier 上的哈希索引
+                new CreateIndexModel<Submission>(Builders<Submission>.IndexKeys.Hashed(sub => sub.Language.Identifier)),
+                // CreationTime 上的递减索引
+                new CreateIndexModel<Submission>(Builders<Submission>.IndexKeys.Descending(sub => sub.CreationTime)),
+                // Status 上的递增索引
+                new CreateIndexModel<Submission>(Builders<Submission>.IndexKeys.Ascending(sub => sub.Status)),
+                // Result.Verdict 上的递增索引
+                new CreateIndexModel<Submission>(Builders<Submission>.IndexKeys.Ascending(sub => sub.Result.Verdict))
+            };
+
+            _repo.Submissions.Indexes.CreateMany(indexesList);
+            _logger?.LogDebug("在用户提交数据集上创建了 {0} 个索引。", indexesList.Count);
+        }
+
+        /// <summary>
         /// 初始化语言数据集。
         /// </summary>
         private void InitializeLanguageCollection()
@@ -173,6 +200,7 @@ namespace BitWaves.Data
             InitializeAnnouncementCollection();
             InitializeProblemCollection();
             InitializeProblemTagsCollection();
+            InitializeSubmissionCollection();
             InitializeLanguageCollection();
         }
 

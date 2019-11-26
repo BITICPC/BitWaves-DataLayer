@@ -41,6 +41,11 @@ namespace BitWaves.Data
         public const string ProblemTags = "ProblemTags";
 
         /// <summary>
+        /// 提交数据集的名称。
+        /// </summary>
+        public const string Submissions = "Submissions";
+
+        /// <summary>
         /// 语言数据集的名称。
         /// </summary>
         public const string Languages = "Languages";

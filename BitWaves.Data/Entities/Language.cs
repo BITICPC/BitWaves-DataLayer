@@ -40,9 +40,7 @@ namespace BitWaves.Data.Entities
             Contract.NotNull(displayName, nameof(displayName));
 
             Id = ObjectId.GenerateNewId();
-            Identifier = identifier;
-            Dialect = dialect;
-            Version = version;
+            Triple = new LanguageTriple(identifier, dialect, version);
             DisplayName = displayName;
         }
 
@@ -53,19 +51,9 @@ namespace BitWaves.Data.Entities
         public ObjectId Id { get; private set; }
 
         /// <summary>
-        /// 获取或设置语言的标识符。
+        /// 获取或设置语言三元组。
         /// </summary>
-        public string Identifier { get; set; }
-
-        /// <summary>
-        /// 获取或设置语言的方言标识符。
-        /// </summary>
-        public string Dialect { get; set; }
-
-        /// <summary>
-        /// 获取或设置语言的版本。
-        /// </summary>
-        public string Version { get; set; }
+        public LanguageTriple Triple { get; set; }
 
         /// <summary>
         /// 获取或设置语言的用户友好名称。

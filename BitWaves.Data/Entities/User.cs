@@ -36,8 +36,6 @@ namespace BitWaves.Data.Entities
             Username = username;
             PasswordHash = passwordHash;
             JoinTime = DateTime.UtcNow;
-            AttemptedProblems = new List<ObjectId>();
-            SolvedProblems = new List<ObjectId>();
         }
 
         /// <summary>
@@ -115,15 +113,5 @@ namespace BitWaves.Data.Entities
         /// 获取或设置用户是否为管理员。
         /// </summary>
         public bool IsAdmin { get; set; }
-
-        /// <summary>
-        /// 获取或设置用户尝试过的题目的 ID。
-        /// </summary>
-        public List<ObjectId> AttemptedProblems { get; set; }
-
-        /// <summary>
-        /// 获取或设置用户成功解答出的题目的 ID。
-        /// </summary>
-        public List<ObjectId> SolvedProblems { get; set; }
     }
 }

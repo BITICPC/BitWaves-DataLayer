@@ -211,7 +211,7 @@ namespace BitWaves.Data
         {
             _logger?.LogTrace("向用户数据集添加种子数据...");
 
-            var adminUser = new User("admin", PasswordUtils.GetPasswordHash("bitwaves2019")) { IsAdmin = true };
+            var adminUser = new User("admin", Password.GetPasswordHash("bitwaves2019")) { IsAdmin = true };
 
             try
             {

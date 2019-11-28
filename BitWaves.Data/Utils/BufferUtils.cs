@@ -1,4 +1,4 @@
-namespace BitWaves.Data
+namespace BitWaves.Data.Utils
 {
     /// <summary>
     /// 提供字节缓冲区相关的方法。

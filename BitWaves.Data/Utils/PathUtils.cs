@@ -1,6 +1,6 @@
 using System;
 
-namespace BitWaves.Data
+namespace BitWaves.Data.Utils
 {
     /// <summary>
     /// 提供路径相关的功能方法。

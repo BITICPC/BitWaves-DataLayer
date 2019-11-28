@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using BitWaves.Data.Utils;
 using NUnit.Framework;
 
 namespace BitWaves.Data.UnitTest

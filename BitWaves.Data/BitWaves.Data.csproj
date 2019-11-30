@@ -16,6 +16,7 @@
 
     <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
       <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+      <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     </PropertyGroup>
 
     <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
@@ -39,9 +40,6 @@
     <!-- Miscellaneous dependencies -->
     <ItemGroup>
       <PackageReference Include="System.IO.Compression.ZipFile" Version="4.3.0" />
-    </ItemGroup>
-    <ItemGroup>
-      <Folder Include="Extensions" />
     </ItemGroup>
 
 </Project>

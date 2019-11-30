@@ -63,7 +63,14 @@ namespace BitWaves.Data
                 }
             }
 
-            return builder.GetMetadata();
+            try
+            {
+                return builder.GetMetadata();
+            }
+            catch (InvalidOperationException e)
+            {
+                throw new BadTestDataArchiveException("无效的测试数据集。", e);
+            }
         }
     }
 }

@@ -48,9 +48,9 @@ namespace BitWaves.Data.Entities
         public ObjectId Id { get; private set; }
 
         /// <summary>
-        /// 获取或设置公告的作者的用户名。
+        /// 获取公告的作者的用户名。
         /// </summary>
-        public string Author { get; set; }
+        public string Author { get; private set; }
 
         /// <summary>
         /// 获取公告的创建时间。
@@ -58,9 +58,9 @@ namespace BitWaves.Data.Entities
         public DateTime CreationTime { get; private set; }
 
         /// <summary>
-        /// 获取或设置公告的上次修改时间。
+        /// 获取公告的上次修改时间。
         /// </summary>
-        public DateTime LastUpdateTime { get; set; }
+        public DateTime LastUpdateTime { get; private set; }
 
         /// <summary>
         /// 获取或设置公告是否置顶。

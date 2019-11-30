@@ -1,4 +1,5 @@
 using System;
+using BitWaves.Data.Utils;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
@@ -20,20 +21,20 @@ namespace BitWaves.Data.Entities
         /// 初始化 <see cref="User"/> 类的新实例。
         /// </summary>
         /// <param name="username">用户名。</param>
-        /// <param name="passwordHash">用户密码哈希值。</param>
+        /// <param name="password">用户密码。</param>
         /// <exception cref="ArgumentNullException">
         ///     <paramref name="username"/> 为 null
         ///     或
-        ///     <paramref name="passwordHash"/> 为 null。
+        ///     <paramref name="password"/> 为 null。
         /// </exception>
-        public User(string username, byte[] passwordHash)
+        public User(string username, string password)
         {
             Contract.NotNull(username, nameof(username));
-            Contract.NotNull(passwordHash, nameof(passwordHash));
+            Contract.NotNull(password, nameof(password));
 
             Id = ObjectId.GenerateNewId();
             Username = username;
-            PasswordHash = passwordHash;
+            PasswordHash = PasswordUtils.GetPasswordHash(password);
             JoinTime = DateTime.UtcNow;
         }
 
@@ -49,9 +50,9 @@ namespace BitWaves.Data.Entities
         public string Username { get; set; }
 
         /// <summary>
-        /// 获取或设置用户密码的 SHA256 哈希值。
+        /// 获取用户密码的 SHA256 哈希值。
         /// </summary>
-        public byte[] PasswordHash { get; set; }
+        public byte[] PasswordHash { get; private set; }
 
         /// <summary>
         /// 获取或设置用户的昵称。

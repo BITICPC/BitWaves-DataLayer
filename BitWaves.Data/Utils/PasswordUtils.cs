@@ -1,19 +1,18 @@
 using System;
 using System.Security.Cryptography;
 using System.Text;
-using BitWaves.Data.Utils;
 
-namespace BitWaves.Data
+namespace BitWaves.Data.Utils
 {
     /// <summary>
     /// 提供密码哈希相关的方法。
     /// </summary>
-    public static class Password
+    internal static class PasswordUtils
     {
         private static readonly Encoding Encoding;
         private static readonly HashAlgorithm Hasher;
 
-        static Password()
+        static PasswordUtils()
         {
             Encoding = Encoding.UTF8;
             Hasher = SHA256.Create();

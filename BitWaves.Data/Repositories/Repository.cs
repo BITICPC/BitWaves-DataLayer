@@ -1,17 +1,21 @@
 using System;
 using Microsoft.Extensions.DependencyInjection;
 using MongoDB.Driver;
-using MongoDB.Driver.GridFS;
 
-namespace BitWaves.Data
+namespace BitWaves.Data.Repositories
 {
-    using Entities;
-
     /// <summary>
     /// 表示 BitWaves 的数据仓库。
     /// </summary>
     public sealed class Repository
     {
+        private readonly Lazy<ContentRepository> _contents;
+        private readonly Lazy<UserRepository> _users;
+        private readonly Lazy<AnnouncementRepository> _announcements;
+        private readonly Lazy<ProblemRepository> _problems;
+        private readonly Lazy<SubmissionRepository> _submissions;
+        private readonly Lazy<LanguageRepository> _languages;
+
         /// <summary>
         /// 初始化 <see cref="Repository"/> 类的新实例。
         /// </summary>
@@ -23,63 +27,53 @@ namespace BitWaves.Data
         {
             Contract.NotNull(connectionString, nameof(connectionString));
 
-            MongoClient = new MongoClient(connectionString);
-            Database = MongoClient.GetDatabase(RepositoryNames.Repository);
+            var database = new MongoClient(connectionString).GetDatabase(RepositoryNames.Repository);
+            DataContext = new RepositoryDataContext(database);
+
+            _contents = new Lazy<ContentRepository>(() => new ContentRepository(this, DataContext.Contents));
+            _users = new Lazy<UserRepository>(() => new UserRepository(this, DataContext.Users));
+            _announcements =
+                new Lazy<AnnouncementRepository>(() => new AnnouncementRepository(this, DataContext.Announcements));
+            _problems = new Lazy<ProblemRepository>(() => new ProblemRepository(this, DataContext.Problems));
+            _submissions =
+                new Lazy<SubmissionRepository>(() => new SubmissionRepository(this, DataContext.Submissions));
+            _languages = new Lazy<LanguageRepository>(() => new LanguageRepository(this, DataContext.Languages));
         }
 
         /// <summary>
-        /// 获取包含到 MongoDB 实例的连接池的 <see cref="IMongoClient"/> 对象。
+        /// 获取 BitWaves 数据集的 MongoDB 数据上下文。
         /// </summary>
-        public IMongoClient MongoClient { get; }
-
-        /// <summary>
-        /// 获取 BitWaves 数据库实例对象。
-        /// </summary>
-        public IMongoDatabase Database { get; }
+        internal RepositoryDataContext DataContext { get; }
 
         /// <summary>
         /// 获取静态内容数据集。
         /// </summary>
-        public IMongoCollection<Content> Contents => Database.GetCollection<Content>(RepositoryNames.Contents);
+        public ContentRepository Contents => _contents.Value;
 
         /// <summary>
         /// 获取用户数据集。
         /// </summary>
-        public IMongoCollection<User> Users => Database.GetCollection<User>(RepositoryNames.Users);
+        public UserRepository Users => _users.Value;
 
         /// <summary>
         /// 获取全站公告数据集。
         /// </summary>
-        public IMongoCollection<Announcement> Announcements => Database.GetCollection<Announcement>(
-            RepositoryNames.Announcements);
+        public AnnouncementRepository Announcements => _announcements.Value;
 
         /// <summary>
         /// 获取题目数据集。
         /// </summary>
-        public IMongoCollection<Problem> Problems => Database.GetCollection<Problem>(RepositoryNames.Problems);
+        public ProblemRepository Problems => _problems.Value;
 
         /// <summary>
-        /// 获取包含题目测试数据文件的 GridFS Bucket。
+        /// 获取提交数据集。
         /// </summary>
-        public IGridFSBucket TestDataArchives =>
-            new GridFSBucket(Database, new GridFSBucketOptions { BucketName = RepositoryNames.TestDataArchiveBucket });
-
-        /// <summary>
-        /// 获取题目标签数据字典。
-        /// </summary>
-        public IMongoCollection<ProblemTag> ProblemTags =>
-            Database.GetCollection<ProblemTag>(RepositoryNames.ProblemTags);
-
-        /// <summary>
-        /// 获取用户提交数据集。
-        /// </summary>
-        public IMongoCollection<Submission> Submissions =>
-            Database.GetCollection<Submission>(RepositoryNames.Submissions);
+        public SubmissionRepository Submissions => _submissions.Value;
 
         /// <summary>
         /// 获取语言数据集。
         /// </summary>
-        public IMongoCollection<Language> Languages => Database.GetCollection<Language>(RepositoryNames.Languages);
+        public LanguageRepository Languages => _languages.Value;
     }
 
     namespace DependencyInjection

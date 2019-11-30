@@ -12,9 +12,8 @@ namespace BitWaves.Data
         /// </summary>
         /// <param name="value">要检查的值。</param>
         /// <param name="variableName">变量名称。</param>
-        /// <typeparam name="T">要检查的值的类型。必须为引用类型。</typeparam>
         /// <exception cref="ArgumentNullException"><paramref name="value"/> 为 null。</exception>
-        public static void NotNull<T>(T value, string variableName) where T : class
+        public static void NotNull(object value, string variableName)
         {
             if (value == null)
                 throw new ArgumentNullException(variableName);
@@ -34,6 +33,36 @@ namespace BitWaves.Data
 
             if (value.Length == 0)
                 throw new ArgumentException(message, variableName);
+        }
+
+        /// <summary>
+        /// 检查给定的值是否不为负值。如果给定的值为负值，抛出 <see cref="ArgumentOutOfRangeException"/> 异常。
+        /// </summary>
+        /// <param name="value">要检查的值。</param>
+        /// <param name="message">异常消息。</param>
+        /// <param name="variableName">要检查的值在调用方处的变量名。</param>
+        /// <exception cref="ArgumentOutOfRangeException">
+        ///     <paramref name="value"/> 的值小于零。
+        /// </exception>
+        public static void NonNegative(long value, string message, string variableName)
+        {
+            if (value < 0)
+                throw new ArgumentOutOfRangeException(variableName, message);
+        }
+
+        /// <summary>
+        /// 检查给定的值是否为正。如果给定的值不为正，抛出 <see cref="ArgumentOutOfRangeException"/> 异常。
+        /// </summary>
+        /// <param name="value">要检查的值。</param>
+        /// <param name="message">异常消息。</param>
+        /// <param name="variableName">要检查的值在调用方处的变量名。</param>
+        /// <exception cref="ArgumentOutOfRangeException">
+        ///     <paramref name="value"/> 的值小于或等于零。
+        /// </exception>
+        public static void Positive(long value, string message, string variableName)
+        {
+            if (value <= 0)
+                throw new ArgumentOutOfRangeException(variableName, message);
         }
     }
 }

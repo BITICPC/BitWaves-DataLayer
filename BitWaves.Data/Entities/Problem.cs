@@ -38,6 +38,7 @@ namespace BitWaves.Data.Entities
             CreationTime = DateTime.UtcNow;
             LastUpdateTime = DateTime.UtcNow;
             Tags = new List<string>();
+
             Description = new ProblemDescription();
             JudgeInfo = new ProblemJudgeInfo();
         }
@@ -60,9 +61,9 @@ namespace BitWaves.Data.Entities
         public string Title { get; set; }
 
         /// <summary>
-        /// 获取或设置题目的作者。
+        /// 获取题目的作者。
         /// </summary>
-        public string Author { get; set; }
+        public string Author { get; private set; }
 
         /// <summary>
         /// 获取或设置题目的来源。
@@ -70,14 +71,14 @@ namespace BitWaves.Data.Entities
         public string Source { get; set; }
 
         /// <summary>
-        /// 获取或设置题目的创建时间。
+        /// 获取题目的创建时间。
         /// </summary>
-        public DateTime CreationTime { get; set; }
+        public DateTime CreationTime { get; private set; }
 
         /// <summary>
-        /// 获取或设置题目的上次更改时间。
+        /// 获取题目的上次更改时间。
         /// </summary>
-        public DateTime LastUpdateTime { get; set; }
+        public DateTime LastUpdateTime { get; private set; }
 
         /// <summary>
         /// 获取或设置题目的标签列表。
@@ -90,38 +91,38 @@ namespace BitWaves.Data.Entities
         public int Difficulty { get; set; }
 
         /// <summary>
-        /// 获取或设置题目的总提交数量。
+        /// 获取题目的总提交数量。
         /// </summary>
-        public int TotalSubmissions { get; set; }
+        public int TotalSubmissions { get; private set; }
 
         /// <summary>
-        /// 获取或设置题目的总 AC 提交数量。
+        /// 获取题目的总 AC 提交数量。
         /// </summary>
-        public int AcceptedSubmissions { get; set; }
+        public int AcceptedSubmissions { get; private set; }
 
         /// <summary>
-        /// 获取或设置总的尝试解答该题目的用户数量。
+        /// 获取总的尝试解答该题目的用户数量。
         /// </summary>
-        public int TotalAttemptedUsers { get; set; }
+        public int TotalAttemptedUsers { get; private set; }
 
         /// <summary>
-        /// 获取或设置总的成功解答该题目的用户数量。
+        /// 获取总的成功解答该题目的用户数量。
         /// </summary>
-        public int TotalSolvedUsers { get; set; }
+        public int TotalSolvedUsers { get; private set; }
 
         /// <summary>
-        /// 获取或设置题目的最后一次提交的时间。
+        /// 获取题目的最后一次提交的时间。
         /// </summary>
-        public DateTime LastSubmissionTime { get; set; }
+        public DateTime LastSubmissionTime { get; private set; }
 
         /// <summary>
         /// 获取或设置题目的描述信息。
         /// </summary>
-        public ProblemDescription Description { get; set; }
+        public ProblemDescription Description { get; private set; }
 
         /// <summary>
         /// 获取或设置题目的评测相关信息。
         /// </summary>
-        public ProblemJudgeInfo JudgeInfo { get; set; }
+        public ProblemJudgeInfo JudgeInfo { get; private set; }
     }
 }

@@ -1,4 +1,4 @@
-namespace BitWaves.Data
+namespace BitWaves.Data.Repositories
 {
     /// <summary>
     /// 为数据库中各数据集提供名称。

@@ -109,5 +109,38 @@ namespace BitWaves.Data.Repositories
 
             return updateResult.MatchedCount == 1;
         }
+
+        /// <summary>
+        /// 检查给定的用户名和密码是否正确。
+        /// </summary>
+        /// <param name="username">用户名。</param>
+        /// <param name="password">密码。</param>
+        /// <returns>给定的用户名和密码是否正确。</returns>
+        /// <exception cref="ArgumentNullException">
+        ///     <paramref name="username"/> 为 null
+        ///     或
+        ///     <paramref name="password"/> 为 null。
+        /// </exception>
+        /// <exception cref="RepositoryException">访问底层数据源时出现错误。</exception>
+        public async Task<bool> ChallengeAsync(string username, string password)
+        {
+            Contract.NotNull(username, nameof(username));
+            Contract.NotNull(password, nameof(password));
+
+            var passwordHash = await ThrowRepositoryExceptionOnErrorAsync(
+                async (collection, _) =>
+                {
+                    return await collection.Find(GetKeyFilter(username))
+                                           .Project(u => u.PasswordHash)
+                                           .FirstOrDefaultAsync();
+                });
+
+            if (passwordHash == null)
+            {
+                return false;
+            }
+
+            return PasswordUtils.Challenge(passwordHash, password);
+        }
     }
 }

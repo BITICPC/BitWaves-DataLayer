@@ -122,6 +122,29 @@ namespace BitWaves.Data.Repositories
         }
 
         /// <summary>
+        /// 查找所有至少存在于一个满足给定筛选条件的题目中的标签。
+        /// </summary>
+        /// <param name="filterBuilder">题目筛选条件。</param>
+        /// <returns>所有至少存在于一个题目中的标签。</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="filterBuilder"/> 为 null。</exception>
+        /// <exception cref="RepositoryException">访问底层数据源时出现错误。</exception>
+        public async Task<List<ProblemTag>> FindAllTagsAsync(ProblemFilterBuilder filterBuilder)
+        {
+            return await ThrowRepositoryExceptionOnErrorAsync(
+                async (collection, _) =>
+                {
+                    var data = await collection.Aggregate()
+                                               .Match(filterBuilder.CreateFilterDefinition())
+                                               .Project(p => new { p.Id, p.Tags })
+                                               .Unwind(p => p.Tags)
+                                               .Group(p => p["Tags"], g => new { Name = g.Key, Count = g.Count() })
+                                               .ToListAsync();
+                    return data.Select(e => new ProblemTag(e.Name.AsString, e.Count))
+                               .ToList();
+                });
+        }
+
+        /// <summary>
         /// 向指定的题目添加样例输入。
         /// </summary>
         /// <param name="key">要添加样例输入的题目 ID。</param>
@@ -158,25 +181,66 @@ namespace BitWaves.Data.Repositories
         }
 
         /// <summary>
-        /// 查找所有至少存在于一个满足给定筛选条件的题目中的标签。
+        /// 创建筛选给定的公开题目集 ID 的 <see cref="FilterDefinition{Problem}"/> 对象。
         /// </summary>
-        /// <param name="filterBuilder">题目筛选条件。</param>
-        /// <returns>所有至少存在于一个题目中的标签。</returns>
-        /// <exception cref="ArgumentNullException"><paramref name="filterBuilder"/> 为 null。</exception>
+        /// <param name="archiveId">要筛选的公开题目集 ID。</param>
+        /// <returns>筛选给定的公开题目集 ID 的 <see cref="FilterDefinition{Problem}"/> 对象。</returns>
+        private FilterDefinition<Problem> GetArchiveIdFilter(int archiveId)
+        {
+            return Builders<Problem>.Filter.Eq(p => p.ArchiveId, archiveId);
+        }
+
+        /// <summary>
+        /// 获取具有给定的公开题目集 ID 的题目的详细信息。
+        /// </summary>
+        /// <param name="archiveId">公开题目集 ID。</param>
+        /// <returns>具有给定的公开题目集 ID 的题目的详细信息。若没有找到这样的题目，返回 null。</returns>
         /// <exception cref="RepositoryException">访问底层数据源时出现错误。</exception>
-        public async Task<List<ProblemTag>> FindAllTagsAsync(ProblemFilterBuilder filterBuilder)
+        public async Task<Problem> FindOneArchiveProblemAsync(int archiveId)
         {
             return await ThrowRepositoryExceptionOnErrorAsync(
+                async (collection, _) => await collection.Find(GetArchiveIdFilter(archiveId)).FirstOrDefaultAsync());
+        }
+
+        /// <summary>
+        /// 将给定的题目添加至公开题目集中。
+        /// </summary>
+        /// <remarks>
+        /// 如果给定的公开题目集 ID 与已有的题目 ID 发生冲突，该方法抛出 <see cref="RepositoryException"/> 异常，且异常的
+        /// <see cref="RepositoryException.ErrorCode"/> 属性为 <see cref="RepositoryErrorCode.DuplicateKey"/>。
+        /// </remarks>
+        /// <param name="key">要添加到公开题目集的题目的全局唯一 ID。</param>
+        /// <param name="archiveId">公开题目集编号。</param>
+        /// <returns>是否成功地更新了给定的题目的公开题目集 ID。</returns>
+        /// <exception cref="RepositoryException">访问底层数据源时出现错误。</exception>
+        public async Task<bool> AddProblemToArchiveAsync(ObjectId key, int archiveId)
+        {
+            var updateResult = await ThrowRepositoryExceptionOnErrorAsync(
                 async (collection, _) =>
                 {
-                    var data = await collection.Aggregate()
-                                               .Match(filterBuilder.CreateFilterDefinition())
-                                               .Project(p => new { p.Id, p.Tags })
-                                               .Unwind(p => p.Tags)
-                                               .Group(p => p["Tags"], g => new { Name = g.Key, Count = g.Count() })
-                                               .ToListAsync();
-                    return data.Select(e => new ProblemTag(e.Name.AsString, e.Count))
-                               .ToList();
+                    return await collection.UpdateOneAsync(
+                        GetKeyFilter(key),
+                        Builders<Problem>.Update.Set(p => p.ArchiveId, archiveId));
+                });
+            return updateResult.MatchedCount == 1;
+        }
+
+        /// <summary>
+        /// 从公开题目集中删除给定的题目。
+        /// </summary>
+        /// <param name="archiveIds">要删除的题目在公开题目集中的 ID。</param>
+        /// <exception cref="ArgumentNullException"><paramref name="archiveIds"/> 为 null。</exception>
+        /// <exception cref="RepositoryException">访问底层数据源时出现错误。</exception>
+        public async Task DeleteProblemsFromArchiveAsync(IEnumerable<int> archiveIds)
+        {
+            Contract.NotNull(archiveIds, nameof(archiveIds));
+
+            var updateResult = await ThrowRepositoryExceptionOnErrorAsync(
+                async (collection, _) =>
+                {
+                    return await collection.UpdateManyAsync(
+                        Builders<Problem>.Filter.In(p => p.ArchiveId, archiveIds.Cast<int?>()),
+                        Builders<Problem>.Update.Unset(p => p.ArchiveId));
                 });
         }
     }

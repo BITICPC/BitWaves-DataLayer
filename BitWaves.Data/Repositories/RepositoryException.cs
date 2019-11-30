@@ -16,14 +16,19 @@ namespace BitWaves.Data.Repositories
         private const string RepositoryExceptionMessage = "Failed to complete the required operation";
 
         /// <summary>
+        /// 获取错误码。
+        /// </summary>
+        public RepositoryErrorCode ErrorCode { get; }
+
+        /// <summary>
         /// 获取该异常是否由操作超时而引起。
         /// </summary>
-        public bool IsTimeout { get; }
+        public bool IsTimeout => ErrorCode == RepositoryErrorCode.Timeout;
 
         /// <summary>
         /// 获取该异常是否由引入了重复的键而引起。
         /// </summary>
-        public bool IsDuplicateKey { get; }
+        public bool IsDuplicateKey => ErrorCode == RepositoryErrorCode.DuplicateKey;
 
         /// <summary>
         /// 获取引发当前异常的 <see cref="MongoException"/> 异常。
@@ -39,10 +44,22 @@ namespace BitWaves.Data.Repositories
         {
             if (ex is MongoWriteException writeException)
             {
-                var category = writeException.WriteError.Category;
-                IsTimeout = category == ServerErrorCategory.ExecutionTimeout;
-                IsDuplicateKey = category == ServerErrorCategory.DuplicateKey;
+                ErrorCode = RepositoryErrorCodeHelper.FromMongoServerErrorCategory(writeException.WriteError.Category);
             }
+            else
+            {
+                ErrorCode = RepositoryErrorCode.Unknown;
+            }
+        }
+
+        /// <summary>
+        /// 初始化 <see cref="RepositoryException"/> 类的新实例。
+        /// </summary>
+        /// <param name="errorCode">错误码。</param>
+        public RepositoryException(RepositoryErrorCode errorCode)
+            : base(RepositoryExceptionMessage)
+        {
+            ErrorCode = errorCode;
         }
 
         /// <summary>
@@ -59,8 +76,7 @@ namespace BitWaves.Data.Repositories
         /// <inheritdoc />
         public override void GetObjectData(SerializationInfo info, StreamingContext context)
         {
-            info.AddValue(nameof(IsTimeout), IsTimeout);
-            info.AddValue(nameof(IsDuplicateKey), IsDuplicateKey);
+            info.AddValue(nameof(ErrorCode), ErrorCode);
 
             base.GetObjectData(info, context);
         }

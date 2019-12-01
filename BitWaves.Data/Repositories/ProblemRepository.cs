@@ -311,6 +311,34 @@ namespace BitWaves.Data.Repositories
         }
 
         /// <summary>
+        /// 将给定的题目的测试数据包下载到给定的流中。
+        /// </summary>
+        /// <param name="problemId">题目 ID。</param>
+        /// <param name="output">存放下载的测试数据包的流。</param>
+        /// <returns>是否成功地下载了指定的题目的测试数据包。</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="output"/> 为 null。</exception>
+        /// <exception cref="RepositoryException">访问底层数据源时出现错误。</exception>
+        public async Task<bool> DownloadProblemTestDataArchive(ObjectId problemId, Stream output)
+        {
+            Contract.NotNull(output, nameof(output));
+
+            return await ThrowRepositoryExceptionOnErrorAsync(
+                async (collection, context) =>
+                {
+                    var archiveId = await collection.Find(GetKeyFilter(problemId))
+                                                    .Project(p => p.JudgeInfo.TestDataArchiveFileId)
+                                                    .FirstOrDefaultAsync();
+                    if (archiveId == null)
+                    {
+                        return false;
+                    }
+
+                    await context.ProblemTestDataArchives.DownloadToStreamAsync(archiveId.Value, output);
+                    return true;
+                });
+        }
+
+        /// <summary>
         /// 删除给定题目的测试数据包。
         /// </summary>
         /// <param name="problemId">要删除测试数据包的题目的 ID。</param>

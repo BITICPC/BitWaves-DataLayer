@@ -6,7 +6,8 @@ using MongoDB.Driver;
 
 namespace BitWaves.Data.Repositories
 {
-    public sealed class LanguageRepository : ImmutableEntityRepository<Language, ObjectId, LanguageFindPipeline>
+    public sealed class LanguageRepository
+        : ImmutableEntityRepository<Language, ObjectId, LanguageFilterBuilder, LanguageFindPipeline>
     {
         /// <summary>
         /// 初始化 <see cref="LanguageRepository"/> 类的新实例。

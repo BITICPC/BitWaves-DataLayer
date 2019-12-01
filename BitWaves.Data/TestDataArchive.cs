@@ -95,6 +95,21 @@ namespace BitWaves.Data
         }
 
         /// <summary>
+        /// 从给定的 <see cref="ZipArchive"/> 对象加载测试数据包结构。
+        /// </summary>
+        /// <param name="archive">包含测试数据包数据的压缩文件包。</param>
+        /// <returns>封装测试数据包中数据描述的 <see cref="TestDataArchive"/> 对象。</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="archive"/> 为 null。</exception>
+        /// <exception cref="BadTestDataArchiveException">给定的压缩包中不包含有效的测试数据包结构。</exception>
+        public static TestDataArchive FromZipArchive(ZipArchive archive)
+        {
+            Contract.NotNull(archive, nameof(archive));
+
+            var meta = TestDataArchiveMetadata.FromZipArchive(archive);
+            return new TestDataArchive(archive, meta);
+        }
+
+        /// <summary>
         /// 从给定的数据流中加载测试数据包结构。
         /// </summary>
         /// <param name="stream">包含测试数据包数据的数据流。</param>
@@ -115,8 +130,7 @@ namespace BitWaves.Data
                 throw new BadTestDataArchiveException("无效的测试数据集文件结构。", ex);
             }
 
-            var meta = TestDataArchiveMetadata.FromZipArchive(archive);
-            return new TestDataArchive(archive, meta);
+            return FromZipArchive(archive);
         }
 
         /// <summary>

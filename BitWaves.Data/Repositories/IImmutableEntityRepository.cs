@@ -10,9 +10,11 @@ namespace BitWaves.Data.Repositories
     /// </summary>
     /// <typeparam name="TEntity">实体对象类型。</typeparam>
     /// <typeparam name="TKey">实体对象的键类型。</typeparam>
+    /// <typeparam name="TFilterBuilder">实体对象筛选器建造器的类型。</typeparam>
     /// <typeparam name="TFindPipeline">实体对象的查找管道类型。</typeparam>
-    public interface IImmutableEntityRepository<TEntity, in TKey, TFindPipeline>
+    public interface IImmutableEntityRepository<TEntity, in TKey, TFilterBuilder, TFindPipeline>
         where TEntity: class
+        where TFilterBuilder: FilterBuilder<TEntity>
         where TFindPipeline: FindPipeline<TEntity>
     {
         /// <summary>
@@ -70,5 +72,14 @@ namespace BitWaves.Data.Repositories
         /// <exception cref="ArgumentNullException"><paramref name="pipeline"/> 为 null。</exception>
         /// <exception cref="RepositoryException">访问底层数据源时出现错误。</exception>
         Task<FindResult<TEntity>> FindManyAsync(TFindPipeline pipeline);
+
+        /// <summary>
+        /// 统计在数据集中满足给定的筛选条件的实体对象的数量。
+        /// </summary>
+        /// <param name="filterBuilder">筛选条件建造器。</param>
+        /// <returns>在数据集中满足给定的筛选条件的实体对象的数量。</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="filterBuilder"/> 为 null。</exception>
+        /// <exception cref="RepositoryException">访问底层数据源时出现错误。</exception>
+        Task<long> CountAsync(TFilterBuilder filterBuilder);
     }
 }

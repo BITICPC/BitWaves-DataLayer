@@ -10,7 +10,8 @@ namespace BitWaves.Data.Repositories
     /// <summary>
     /// 静态对象实体对象仓库。
     /// </summary>
-    public sealed class ContentRepository : ImmutableEntityRepository<Content, ObjectId, ContentFindPipeline>
+    public sealed class ContentRepository
+        : ImmutableEntityRepository<Content, ObjectId, ContentFilterBuilder, ContentFindPipeline>
     {
         /// <summary>
         /// 初始化 <see cref="ContentRepository"/> 的新实例。

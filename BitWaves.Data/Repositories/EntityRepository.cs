@@ -11,16 +11,18 @@ namespace BitWaves.Data.Repositories
     /// <typeparam name="TEntity">实体对象类型。</typeparam>
     /// <typeparam name="TKey">实体对象的 ID 的类型。</typeparam>
     /// <typeparam name="TUpdateInfo">实体对象的更新类型。</typeparam>
+    /// <typeparam name="TFilterBuilder">实体对象的筛选器的构建器类型。</typeparam>
     /// <typeparam name="TFindPipeline">实体对象的查询管道类型。</typeparam>
-    public abstract class EntityRepository<TEntity, TKey, TUpdateInfo, TFindPipeline>
-        : ImmutableEntityRepository<TEntity, TKey, TFindPipeline>,
-          IEntityRepository<TEntity, TKey, TUpdateInfo, TFindPipeline>
+    public abstract class EntityRepository<TEntity, TKey, TUpdateInfo, TFilterBuilder, TFindPipeline>
+        : ImmutableEntityRepository<TEntity, TKey, TFilterBuilder, TFindPipeline>,
+          IEntityRepository<TEntity, TKey, TUpdateInfo, TFilterBuilder, TFindPipeline>
         where TEntity: class
         where TUpdateInfo: UpdateInfo<TEntity>
+        where TFilterBuilder: FilterBuilder<TEntity>
         where TFindPipeline: FindPipeline<TEntity>
     {
         /// <summary>
-        /// 初始化 <see cref="EntityRepository{TEntity, TKey, TUpdateInfo, TFindPipeline}"/> 类的新实例。
+        /// 初始化 <see cref="EntityRepository{TEntity, TKey, TUpdateInfo, TFilterBuilder, TFindPipeline}"/> 类的新实例。
         /// </summary>
         /// <param name="repository">BitWaves 数据仓库。</param>
         /// <param name="collection">MongoDB 数据集接口。</param>

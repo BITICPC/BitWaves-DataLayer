@@ -10,11 +10,13 @@ namespace BitWaves.Data.Repositories
     /// <typeparam name="TEntity">实体对象类型。</typeparam>
     /// <typeparam name="TKey">实体对象的 ID 类型。</typeparam>
     /// <typeparam name="TUpdateInfo">更新给定实体对象类型的更新定义类型。</typeparam>
+    /// <typeparam name="TFilterBuilder">实体对象的筛选器的建造器类型。</typeparam>
     /// <typeparam name="TFindPipeline">查询管道类型。</typeparam>
-    public interface IEntityRepository<TEntity, in TKey, TUpdateInfo, TFindPipeline>
-        : IImmutableEntityRepository<TEntity, TKey, TFindPipeline>
+    public interface IEntityRepository<TEntity, in TKey, TUpdateInfo, TFilterBuilder, TFindPipeline>
+        : IImmutableEntityRepository<TEntity, TKey, TFilterBuilder, TFindPipeline>
         where TEntity: class
         where TUpdateInfo: UpdateInfo<TEntity>
+        where TFilterBuilder: FilterBuilder<TEntity>
         where TFindPipeline: FindPipeline<TEntity>
     {
         /// <summary>

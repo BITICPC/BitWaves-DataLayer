@@ -12,16 +12,18 @@ namespace BitWaves.Data.Repositories
     /// </summary>
     /// <typeparam name="TEntity">实体对象类型。</typeparam>
     /// <typeparam name="TKey">实体对象的键类型。</typeparam>
+    /// <typeparam name="TFilterBuilder">实体对象的筛选器的建造器类型。</typeparam>
     /// <typeparam name="TFindPipeline">实体对象的查询管道类型。</typeparam>
-    public abstract class ImmutableEntityRepository<TEntity, TKey, TFindPipeline>
-        : IImmutableEntityRepository<TEntity, TKey, TFindPipeline>
+    public abstract class ImmutableEntityRepository<TEntity, TKey, TFilterBuilder, TFindPipeline>
+        : IImmutableEntityRepository<TEntity, TKey, TFilterBuilder, TFindPipeline>
         where TEntity: class
+        where TFilterBuilder: FilterBuilder<TEntity>
         where TFindPipeline: FindPipeline<TEntity>
     {
         private readonly IMongoCollection<TEntity> _collection;
 
         /// <summary>
-        /// 初始化 <see cref="ImmutableEntityRepository{TEntity, TKey, TFindPipeline}"/> 类的新实例。
+        /// 初始化 <see cref="ImmutableEntityRepository{TEntity, TKey, TFilterBuilder, TFindPipeline}"/> 类的新实例。
         /// </summary>
         /// <param name="repository">BitWaves 数据集。</param>
         /// <param name="collection">MongoDB 数据集接口。</param>
@@ -151,6 +153,15 @@ namespace BitWaves.Data.Repositories
 
             return await ThrowRepositoryExceptionOnErrorAsync(
                 async (collection, _) => await collection.FindAsync(pipeline));
+        }
+
+        /// <inheritdoc />
+        public async Task<long> CountAsync(TFilterBuilder filterBuilder)
+        {
+            Contract.NotNull(filterBuilder, nameof(filterBuilder));
+
+            return await ThrowRepositoryExceptionOnErrorAsync(
+                async (collection, _) => await collection.Find(filterBuilder).CountDocumentsAsync());
         }
     }
 }

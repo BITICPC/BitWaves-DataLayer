@@ -10,7 +10,7 @@ namespace BitWaves.Data.Repositories
     /// 提交数据集。
     /// </summary>
     public sealed class SubmissionRepository
-        : EntityRepository<Submission, ObjectId, SubmissionUpdateInfo, SubmissionFindPipeline>
+        : EntityRepository<Submission, ObjectId, SubmissionUpdateInfo, SubmissionFilterBuilder, SubmissionFindPipeline>
     {
         /// <summary>
         /// 初始化 <see cref="SubmissionRepository"/> 类的新实例。

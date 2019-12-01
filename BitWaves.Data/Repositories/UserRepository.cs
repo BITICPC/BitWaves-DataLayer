@@ -11,7 +11,8 @@ namespace BitWaves.Data.Repositories
     /// <summary>
     /// 表示用户实体对象集。
     /// </summary>
-    public sealed class UserRepository : EntityRepository<User, string, UserUpdateInfo, UserFindPipeline>
+    public sealed class UserRepository
+        : EntityRepository<User, string, UserUpdateInfo, UserFilterBuilder, UserFindPipeline>
     {
         /// <summary>
         /// 初始化 <see cref="UserRepository"/> 类的新实例。

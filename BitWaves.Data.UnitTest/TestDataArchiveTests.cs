@@ -63,6 +63,12 @@ namespace BitWaves.Data.UnitTest
         }
 
         [Test]
+        public void TestFromArchiveNull()
+        {
+            Assert.Throws<ArgumentNullException>(() => TestDataArchive.FromZipArchive(null));
+        }
+
+        [Test]
         public void TestFromGoodArchive()
         {
             var archive = TestDataArchive.FromFile(_goodArchiveFileName);

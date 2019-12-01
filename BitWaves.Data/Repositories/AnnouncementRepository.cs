@@ -10,7 +10,8 @@ namespace BitWaves.Data.Repositories
     /// 表示全站公告仓库。
     /// </summary>
     public sealed class AnnouncementRepository
-        : EntityRepository<Announcement, ObjectId, AnnouncementUpdateInfo, AnnouncementFindPipeline>
+        : EntityRepository<Announcement, ObjectId, AnnouncementUpdateInfo, AnnouncementFilterBuilder,
+            AnnouncementFindPipeline>
     {
         /// <summary>
         /// 初始化 <see cref="AnnouncementRepository"/> 类的新实例。

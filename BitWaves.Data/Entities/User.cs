@@ -113,5 +113,18 @@ namespace BitWaves.Data.Entities
         /// 获取或设置用户是否为管理员。
         /// </summary>
         public bool IsAdmin { get; set; }
+
+        /// <summary>
+        /// 检查给定的密码的哈希值是否与当前的 <see cref="User"/> 实体对象中保存的密码哈希值一致。
+        /// </summary>
+        /// <param name="password">要检查的密码。</param>
+        /// <returns>给定的密码的哈希值是否与当前的 <see cref="User"/> 实体对象中保存的密码哈希值一致。</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="password"/> 为 null。</exception>
+        public bool Challenge(string password)
+        {
+            Contract.NotNull(password, nameof(password));
+
+            return PasswordUtils.Challenge(PasswordHash, password);
+        }
     }
 }

@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using BitWaves.Data.DML;
 using BitWaves.Data.Entities;
@@ -12,7 +14,8 @@ namespace BitWaves.Data.Repositories
     /// <summary>
     /// 题目数据集。
     /// </summary>
-    public sealed class ProblemRepository : EntityRepository<Problem, ObjectId, ProblemUpdateInfo, ProblemFindPipeline>
+    public sealed class ProblemRepository
+        : EntityRepository<Problem, ObjectId, ProblemUpdateInfo, ProblemFilterBuilder, ProblemFindPipeline>
     {
         /// <summary>
         /// 初始化 <see cref="ProblemRepository"/> 类的新实例。
@@ -235,12 +238,97 @@ namespace BitWaves.Data.Repositories
         {
             Contract.NotNull(archiveIds, nameof(archiveIds));
 
-            var updateResult = await ThrowRepositoryExceptionOnErrorAsync(
+            await ThrowRepositoryExceptionOnErrorAsync(
                 async (collection, _) =>
                 {
                     return await collection.UpdateManyAsync(
                         Builders<Problem>.Filter.In(p => p.ArchiveId, archiveIds.Cast<int?>()),
                         Builders<Problem>.Update.Unset(p => p.ArchiveId));
+                });
+        }
+
+        /// <summary>
+        /// 创建包含给定的表达式作为映射表达式的 <see cref="FindOneAndUpdateOptions{Problem, TProjection}"/> 对象。该方法主要
+        /// 用于引导编译器推导 <typeparamref name="TProjection"/> 类型参数。
+        /// </summary>
+        /// <param name="projection">表达式。</param>
+        /// <typeparam name="TProjection">映射目标类型。</typeparam>
+        /// <returns>
+        /// 包含给定的表达式作为映射表达式的 <see cref="FindOneAndUpdateOptions{Problem, TProjection}"/> 对象。
+        /// </returns>
+        /// <exception cref="ArgumentNullException"><paramref name="projection"/> 为 null。</exception>
+        private FindOneAndUpdateOptions<Problem, TProjection> CreateFindOneAndUpdateOptionsWithProjection<TProjection>(
+            Expression<Func<Problem, TProjection>> projection)
+        {
+            Contract.NotNull(projection, nameof(projection));
+
+            return new FindOneAndUpdateOptions<Problem, TProjection>
+            {
+                Projection = Builders<Problem>.Projection.Expression(projection)
+            };
+        }
+
+        /// <summary>
+        /// 从给定的数据流中上传测试数据包给指定的题目。
+        /// </summary>
+        /// <param name="problemId">题目的全局唯一 ID。</param>
+        /// <param name="stream">包含测试数据包数据的流。</param>
+        /// <exception cref="ArgumentNullException"><paramref name="stream"/> 为 null。</exception>
+        /// <exception cref="RepositoryException">访问底层数据源时出现错误。</exception>
+        public async Task<bool> UploadProblemTestDataArchive(ObjectId problemId, Stream stream)
+        {
+            Contract.NotNull(stream, nameof(stream));
+
+            return await ThrowRepositoryExceptionOnErrorAsync(
+                async (collection, context) =>
+                {
+                    // Upload the data onto GridFS.
+                    var archiveId = ObjectId.GenerateNewId();
+                    var archiveFileName = archiveId + ".zip";
+                    await context.ProblemTestDataArchives.UploadFromStreamAsync(archiveId, archiveFileName, stream);
+
+                    // Update the corresponding problem entity.
+                    var oldArchiveIdWrapper = await collection.FindOneAndUpdateAsync(
+                        GetKeyFilter(problemId),
+                        Builders<Problem>.Update.Set(p => p.JudgeInfo.TestDataArchiveFileId, archiveId),
+                        CreateFindOneAndUpdateOptionsWithProjection(p => new { p.JudgeInfo.TestDataArchiveFileId }));
+                    if (oldArchiveIdWrapper == null)
+                    {
+                        // The problem does not exist.
+                        await context.ProblemTestDataArchives.DeleteAsync(archiveId);
+                        return false;
+                    }
+
+                    // Delete the old archive if it exists.
+                    var oldArchiveId = oldArchiveIdWrapper.TestDataArchiveFileId;
+                    if (oldArchiveId != null)
+                    {
+                        await context.ProblemTestDataArchives.DeleteAsync(oldArchiveId.Value);
+                    }
+
+                    return true;
+                });
+        }
+
+        /// <summary>
+        /// 删除给定题目的测试数据包。
+        /// </summary>
+        /// <param name="problemId">要删除测试数据包的题目的 ID。</param>
+        /// <exception cref="RepositoryException">访问底层数据源时出现错误。</exception>
+        public async Task DeleteProblemTestDataArchive(ObjectId problemId)
+        {
+            await ThrowRepositoryExceptionOnErrorAsync(
+                async (collection, context) =>
+                {
+                    var archiveId = await collection.FindOneAndUpdateAsync(
+                        GetKeyFilter(problemId),
+                        Builders<Problem>.Update.Set(p => p.JudgeInfo.TestDataArchiveFileId, null),
+                        CreateFindOneAndUpdateOptionsWithProjection(p => p.JudgeInfo.TestDataArchiveFileId));
+
+                    if (archiveId != null)
+                    {
+                        await context.ProblemTestDataArchives.DeleteAsync(archiveId.Value);
+                    }
                 });
         }
     }

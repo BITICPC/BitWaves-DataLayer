@@ -118,5 +118,60 @@ namespace BitWaves.Data.Utils
             var value = valueProperty.GetValue(maybe);
             return new Maybe<object>(value);
         }
+
+        /// <summary>
+        /// 设置给定的 <see cref="Maybe{T}"/> 类型对象的内部值为给定的值。
+        /// </summary>
+        /// <param name="maybe">要设置内部值的 <see cref="Maybe{T}"/> 对象。</param>
+        /// <param name="value">要设置的内部值。</param>
+        /// <exception cref="ArgumentNullException"><paramref name="maybe"/> 为 null。</exception>
+        /// <exception cref="ArgumentException">
+        ///     <paramref name="maybe"/> 不是一个 <see cref="Maybe{T}"/> 类型的实例对象。
+        /// </exception>
+        /// <exception cref="InvalidOperationException">
+        ///     <paramref name="value"/> 的类型与给定的 <see cref="Maybe{T}"/> 类型的内部值类型不匹配。
+        /// </exception>
+        public static void SetInnerValue(object maybe, object value)
+        {
+            Contract.NotNull(maybe, nameof(maybe));
+
+            if (!IsMaybe(maybe))
+                throw new ArgumentException(nameof(maybe) + " is not a maybe type.", nameof(maybe));
+
+            var maybeType = maybe.GetType();
+            if (!GetInnerType(maybeType).IsInstanceOfType(value))
+                throw new InvalidOperationException(
+                    $"Cannot assign {nameof(value)} as inner value of {nameof(maybe)}.");
+
+            var valueProperty = maybeType.GetProperty(nameof(Maybe<object>.Value));
+            Debug.Assert(valueProperty != null, nameof(valueProperty) + " != null");
+
+            valueProperty.SetValue(maybe, value);
+        }
+
+        public static object CreateEmpty(Type innerType)
+        {
+            Contract.NotNull(innerType, nameof(innerType));
+
+            var maybeType = typeof(Maybe<>).MakeGenericType(innerType);
+            return Activator.CreateInstance(maybeType);
+        }
+
+        public static object Create(Type innerType, object value)
+        {
+            Contract.NotNull(innerType, nameof(innerType));
+
+            var maybe = CreateEmpty(innerType);
+            SetInnerValue(maybe, value);
+
+            return maybe;
+        }
+
+        public static object Create(object value)
+        {
+            Contract.NotNull(value, nameof(value));
+
+            return Create(value.GetType(), value);
+        }
     }
 }

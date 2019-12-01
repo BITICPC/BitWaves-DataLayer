@@ -43,10 +43,74 @@ namespace BitWaves.Data.Utils
         /// </summary>
         public bool HasValue => _hasValue;
 
+        /// <inheritdoc />
+        public override int GetHashCode()
+        {
+            return HasValue ? Value.GetHashCode() : typeof(T).GetHashCode();
+        }
+
+        /// <summary>
+        /// 检查当前的 <see cref="Maybe{T}"/> 实例是否与给定的 <see cref="Maybe{T}"/> 实例相同。
+        /// </summary>
+        /// <param name="another">另一个 <see cref="Maybe{T}"/> 实例。</param>
+        /// <returns>当前的 <see cref="Maybe{T}"/> 实例是否与给定的 <see cref="Maybe{T}"/> 实例相同。</returns>
+        public bool Equals(Maybe<T> another)
+        {
+            if (HasValue != another.HasValue)
+            {
+                return false;
+            }
+
+            if (HasValue)
+            {
+                return Equals(Value, another.Value);
+            }
+
+            return true;
+        }
+
+        /// <inheritdoc />
+        public override bool Equals(object obj)
+        {
+            if (obj == null)
+            {
+                return false;
+            }
+
+            if (!(obj is Maybe<T> maybe))
+            {
+                return false;
+            }
+
+            return Equals(maybe);
+        }
+
         /// <summary>
         /// 获取一个空的 <see cref="Maybe{T}"/> 实例。
         /// </summary>
         public static Maybe<T> Empty => new Maybe<T>();
+
+        /// <summary>
+        /// 检查给定的两个 <see cref="Maybe{T}"/> 值是否相同。
+        /// </summary>
+        /// <param name="lhs">左操作数。</param>
+        /// <param name="rhs">右操作数。</param>
+        /// <returns>给定的两个 <see cref="Maybe{T}"/> 值是否相同。</returns>
+        public static bool operator ==(Maybe<T> lhs, Maybe<T> rhs)
+        {
+            return lhs.Equals(rhs);
+        }
+
+        /// <summary>
+        /// 检查给定的两个 <see cref="Maybe{T}"/> 值是否不相同。
+        /// </summary>
+        /// <param name="lhs">左操作数。</param>
+        /// <param name="rhs">右操作数。</param>
+        /// <returns>给定的两个 <see cref="Maybe{T}"/> 值是否不相同。</returns>
+        public static bool operator !=(Maybe<T> lhs, Maybe<T> rhs)
+        {
+            return !lhs.Equals(rhs);
+        }
 
         /// <summary>
         /// 将给定的值转换为 <see cref="Maybe{T}"/> 包装。

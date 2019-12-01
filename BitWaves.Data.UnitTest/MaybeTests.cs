@@ -64,6 +64,46 @@ namespace BitWaves.Data.UnitTest
         }
 
         [Test]
+        public void TestEqualsNull()
+        {
+            Assert.IsFalse(new Maybe<int>().Equals(null));
+        }
+
+        [Test]
+        public void TestEqualsNonMaybe()
+        {
+            // ReSharper disable once SuspiciousTypeConversion.Global
+            Assert.IsFalse(new Maybe<int>(10).Equals((object) 10));
+        }
+
+        [Test]
+        public void TestEqualsInnerTypeDismatch()
+        {
+            // ReSharper disable once SuspiciousTypeConversion.Global
+            Assert.IsFalse(new Maybe<int>(10).Equals(new Maybe<DateTime>(new DateTime())));
+        }
+
+        [Test]
+        public void TestEqualsBothEmpty()
+        {
+            Assert.IsTrue(new Maybe<int>().Equals(new Maybe<int>()));
+        }
+
+        [Test]
+        public void TestEqualsBothEmptyInnerTypeMismatch()
+        {
+            // ReSharper disable once SuspiciousTypeConversion.Global
+            Assert.IsFalse(new Maybe<int>().Equals(new Maybe<DateTime>()));
+        }
+
+        [Test]
+        public void TestEqualsEmptyNonEmpty()
+        {
+            Assert.IsFalse(new Maybe<int>().Equals(new Maybe<int>(10)));
+            Assert.IsFalse(new Maybe<int>(10).Equals(new Maybe<int>()));
+        }
+
+        [Test]
         public void TestIsMaybeTypeNull()
         {
             Assert.Throws<ArgumentNullException>(() => MaybeUtils.IsMaybeType(null));

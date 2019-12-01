@@ -43,6 +43,11 @@ namespace BitWaves.Data.Repositories
 
             var filter = GetKeyFilter(key);
             var updateDefinition = updateInfo.CreateUpdateDefinition();
+            if (updateDefinition == null)
+            {
+                return true;
+            }
+
             return await ThrowRepositoryExceptionOnErrorAsync(
                 async (collection, _) =>
                 {

@@ -45,14 +45,6 @@ namespace BitWaves.Data.DML
             Contract.NotNull(member, nameof(member));
             Contract.NotNull(parentPath, nameof(parentPath));
 
-            // 检查 memberValue 的类型是否为 EntityUpdateInfo<TRootEntity>。如果是，则递归生成 UpdateDefinition<TRootEntity>
-            if (EntityUpdateInfoUtils.IsEntityUpdateInfo<TRootEntity>(memberValue))
-            {
-                var subUpdate = (UpdateInfo<TRootEntity>) memberValue;
-                var currentPath = parentPath.Push(GetFieldName(member));
-                return subUpdate.CreateUpdateDefinition(currentPath);
-            }
-
             var field = GetEntityField<TRootEntity>(member, parentPath);
             return CreateVerb(field, memberValue);
         }

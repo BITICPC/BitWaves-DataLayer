@@ -82,6 +82,12 @@ namespace BitWaves.Data.DML
                 }
             }
 
+            if (memberValue is UpdateInfo<TRootEntity> memberUpdateInfo)
+            {
+                var currentPath = parentPath.Push(member.Name);
+                return memberUpdateInfo.CreateUpdateDefinition(currentPath);
+            }
+
             return member.GetCustomAttribute<UpdateVerbAttribute>()
                          ?.Resolve<TRootEntity>(member, memberValue, parentPath);
         }

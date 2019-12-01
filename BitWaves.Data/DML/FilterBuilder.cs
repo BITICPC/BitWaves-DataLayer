@@ -42,7 +42,7 @@ namespace BitWaves.Data.DML
         {
             if (_filters.Count == 0)
             {
-                return null;
+                return FilterDefinition<TEntity>.Empty;
             }
 
             if (_filters.Count == 1)

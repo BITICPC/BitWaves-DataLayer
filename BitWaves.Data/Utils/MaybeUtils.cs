@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics;
+using BitWaves.Data.Extensions;
 
 namespace BitWaves.Data.Utils
 {
@@ -139,7 +140,8 @@ namespace BitWaves.Data.Utils
                 throw new ArgumentException(nameof(maybe) + " is not a maybe type.", nameof(maybe));
 
             var maybeType = maybe.GetType();
-            if (!GetInnerType(maybeType).IsInstanceOfType(value))
+            var innerType = GetInnerType(maybeType);
+            if (!innerType.CanBeAssigned(value))
                 throw new InvalidOperationException(
                     $"Cannot assign {nameof(value)} as inner value of {nameof(maybe)}.");
 
@@ -149,6 +151,12 @@ namespace BitWaves.Data.Utils
             valueProperty.SetValue(maybe, value);
         }
 
+        /// <summary>
+        /// 创建一个空的 <see cref="Maybe{T}"/> 类型的实例，其内部值类型为给定的类型。
+        /// </summary>
+        /// <param name="innerType">新创建的 <see cref="Maybe{T}"/> 类型的内部值类型。</param>
+        /// <returns>创建的实例。</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="innerType"/> 为 null。</exception>
         public static object CreateEmpty(Type innerType)
         {
             Contract.NotNull(innerType, nameof(innerType));
@@ -157,9 +165,22 @@ namespace BitWaves.Data.Utils
             return Activator.CreateInstance(maybeType);
         }
 
+        /// <summary>
+        /// 创建一个 <see cref="Maybe{T}"/> 类型的实例，带有给定的内部值。
+        /// </summary>
+        /// <param name="innerType">内部值类型。</param>
+        /// <param name="value">内部值。可以为 null。</param>
+        /// <returns>新创建的实例。</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="innerType"/> 为 null。</exception>
+        /// <exception cref="ArgumentException">
+        ///     <paramref name="value"/> 的类型与 <paramref name="innerType"/> 不匹配。
+        /// </exception>
         public static object Create(Type innerType, object value)
         {
             Contract.NotNull(innerType, nameof(innerType));
+
+            if (!innerType.CanBeAssigned(value))
+                throw new ArgumentException($"{nameof(value)} 的类型与 {innerType} 不匹配。");
 
             var maybe = CreateEmpty(innerType);
             SetInnerValue(maybe, value);
@@ -167,6 +188,12 @@ namespace BitWaves.Data.Utils
             return maybe;
         }
 
+        /// <summary>
+        /// 创建一个 <see cref="Maybe{T}"/> 类型的实例，带有给定的内部值。
+        /// </summary>
+        /// <param name="value">内部值。</param>
+        /// <returns>新创建的实例。</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="value"/> 为 null。</exception>
         public static object Create(object value)
         {
             Contract.NotNull(value, nameof(value));

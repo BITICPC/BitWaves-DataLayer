@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using BitWaves.Data.Utils;
 using NUnit.Framework;
 
@@ -228,6 +229,109 @@ namespace BitWaves.Data.UnitTest
             var maybe = MaybeUtils.Unbox(new Maybe<int>(10));
             Assert.IsTrue(maybe.HasValue);
             Assert.IsInstanceOf<int>(maybe.Value);
+            Assert.AreEqual(10, maybe.Value);
+        }
+
+        [Test]
+        public void TestSetInnerValueNull()
+        {
+            Assert.Throws<ArgumentNullException>(() => MaybeUtils.SetInnerValue(null, 10));
+            Assert.DoesNotThrow(() => MaybeUtils.SetInnerValue(new Maybe<object>(), null));
+        }
+
+        [Test]
+        public void TestSetInnerValueNonMaybe()
+        {
+            Assert.Throws<ArgumentException>(() => MaybeUtils.SetInnerValue(new object(), new object()));
+        }
+
+        [Test]
+        public void TestSetInnerValueTypeMismatch()
+        {
+            Assert.Throws<InvalidOperationException>(() => MaybeUtils.SetInnerValue(new Maybe<int>(), new object()));
+        }
+
+        [Test]
+        public void TestSetInnerValue()
+        {
+            var maybe = new Maybe<int>();
+            var boxedMaybe = (object) maybe;
+            MaybeUtils.SetInnerValue(boxedMaybe, 10);
+
+            maybe = (Maybe<int>) boxedMaybe;
+            Assert.AreEqual(10, maybe.Value);
+        }
+
+        [Test]
+        public void TestSetInnerValueDerived()
+        {
+            var maybe = new Maybe<IList<int>>();
+            var boxedMaybe = (object) maybe;
+            var innerValue = new List<int>();
+            MaybeUtils.SetInnerValue(boxedMaybe, innerValue);
+
+            maybe = (Maybe<IList<int>>) boxedMaybe;
+            Assert.AreSame(innerValue, maybe.Value);
+        }
+
+        [Test]
+        public void TestSetInnerValueNonNullableNull()
+        {
+            var maybe = new Maybe<int>();
+            var boxedMaybe = (object) maybe;
+            Assert.Throws<InvalidOperationException>(() => MaybeUtils.SetInnerValue(boxedMaybe, null));
+        }
+
+        [Test]
+        public void TestSetInnerValueNullValue()
+        {
+            var maybe = new Maybe<object>();
+            var boxedMaybe = (object) maybe;
+            MaybeUtils.SetInnerValue(boxedMaybe, null);
+
+            maybe = (Maybe<object>) boxedMaybe;
+            Assert.IsNull(maybe.Value);
+        }
+
+        [Test]
+        public void TestCreateEmptyNull()
+        {
+            Assert.Throws<ArgumentNullException>(() => MaybeUtils.CreateEmpty(null));
+        }
+
+        [Test]
+        public void TestCreateEmpty()
+        {
+            var boxedMaybe = MaybeUtils.CreateEmpty(typeof(int));
+            Assert.IsInstanceOf<Maybe<int>>(boxedMaybe);
+
+            var maybe = (Maybe<int>) boxedMaybe;
+            Assert.IsFalse(maybe.HasValue);
+        }
+
+        [Test]
+        public void TestCreateNullType()
+        {
+            Assert.Throws<ArgumentNullException>(() => MaybeUtils.Create(null, new object()));
+        }
+
+        [Test]
+        public void TestCreateNullValue()
+        {
+            var maybe = (Maybe<object>) MaybeUtils.Create(typeof(object), null);
+            Assert.IsNull(maybe.Value);
+        }
+
+        [Test]
+        public void TestCreateNullValueWithoutType()
+        {
+            Assert.Throws<ArgumentNullException>(() => MaybeUtils.Create(null));
+        }
+
+        [Test]
+        public void TestCreate()
+        {
+            var maybe = (Maybe<int>) MaybeUtils.Create(10);
             Assert.AreEqual(10, maybe.Value);
         }
     }

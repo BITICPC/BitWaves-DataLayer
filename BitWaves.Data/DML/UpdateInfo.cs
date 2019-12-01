@@ -25,14 +25,10 @@ namespace BitWaves.Data.DML
         {
             Contract.NotNull(parentPath, nameof(parentPath));
 
-            var myType = GetType();
-            var myFields = myType.GetRuntimeFields().Cast<MemberInfo>();
-            var myProperties = myType.GetRuntimeProperties().Cast<MemberInfo>();
-
-            var updateDefinitions = myFields.Concat(myProperties)
-                                            .Select(member => ResolveMemberUpdateDefinition(member, parentPath))
-                                            .Where(x => x != null)
-                                            .ToList();
+            var updateDefinitions = GetType().GetProperties(BindingFlags.Public)
+                                             .Select(member => ResolveMemberUpdateDefinition(member, parentPath))
+                                             .Where(x => x != null)
+                                             .ToList();
             if (updateDefinitions.Count == 0)
             {
                 return null;

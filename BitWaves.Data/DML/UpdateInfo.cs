@@ -14,11 +14,11 @@ namespace BitWaves.Data.DML
     public abstract class UpdateInfo<TRootEntity>
     {
         /// <summary>
-        /// 从当前的数据更新模型创建 <see cref="UpdateDefinition{TEntity"/> 实例。
+        /// 从当前的数据更新模型创建 <see cref="UpdateDefinition{TEntity}"/> 实例。
         /// </summary>
         /// <param name="parentPath">从更新模型的根到当前更新模型的父节点的路径。</param>
         /// <returns>
-        ///     当前的数据更新模型创建的 <see cref="UpdateDefinition{TEntity"/> 实例。若没有任何数据需要更新，返回 null。
+        ///     当前的数据更新模型创建的 <see cref="UpdateDefinition{TEntity}"/> 实例。若没有任何数据需要更新，返回 null。
         /// </returns>
         /// <exception cref="ArgumentNullException"><paramref name="parentPath"/> 为 null。</exception>
         internal UpdateDefinition<TRootEntity> CreateUpdateDefinition(ObjectPath parentPath)
@@ -40,10 +40,10 @@ namespace BitWaves.Data.DML
         }
 
         /// <summary>
-        /// 从当前的数据更新模型创建 <see cref="UpdateDefinition{TEntity"/> 实例。
+        /// 从当前的数据更新模型创建 <see cref="UpdateDefinition{TEntity}"/> 实例。
         /// </summary>
         /// <returns>
-        ///     当前的数据更新模型创建的 <see cref="UpdateDefinition{TEntity"/> 实例。若没有任何数据需要更新，返回 null。
+        ///     当前的数据更新模型创建的 <see cref="UpdateDefinition{TEntity}"/> 实例。若没有任何数据需要更新，返回 null。
         /// </returns>
         internal UpdateDefinition<TRootEntity> CreateUpdateDefinition()
         {

@@ -27,7 +27,7 @@ namespace BitWaves.Data.DML
         /// <summary>
         /// 将给定的被标注成员转换到 <see cref="UpdateDefinition{T}"/> 上。
         /// </summary>
-        /// <param name="member">数据更新模型上的成员。该成员上应该带有当前的标注对象。</param>
+        /// <param name="property">数据更新模型上的属性成员。该成员上应该带有当前的标注对象。</param>
         /// <param name="memberValue">数据成员的值。</param>
         /// <param name="parentPath">从更新模型根到当前更新模型的父节点的路径，以点隔开。</param>
         /// <typeparam name="TRootEntity">目标实体对象在数据模式中的根实体对象类型。</typeparam>
@@ -35,17 +35,17 @@ namespace BitWaves.Data.DML
         ///     当前字段更新的 <see cref="UpdateDefinition{T}"/> 定义。若当前字段不包含有效的数据更新定义，返回 null。
         /// </returns>
         /// <exception cref="ArgumentNullException">
-        ///     <paramref name="member"/> 为 null
+        ///     <paramref name="property"/> 为 null
         ///     或
         ///     <paramref name="parentPath"/> 为 null。
         /// </exception>
         public UpdateDefinition<TRootEntity> Resolve<TRootEntity>(
-            MemberInfo member, object memberValue, ObjectPath parentPath)
+            PropertyInfo property, object memberValue, ObjectPath parentPath)
         {
-            Contract.NotNull(member, nameof(member));
+            Contract.NotNull(property, nameof(property));
             Contract.NotNull(parentPath, nameof(parentPath));
 
-            var field = GetEntityField<TRootEntity>(member, parentPath);
+            var field = GetEntityField<TRootEntity>(property, parentPath);
             return CreateVerb(field, memberValue);
         }
 

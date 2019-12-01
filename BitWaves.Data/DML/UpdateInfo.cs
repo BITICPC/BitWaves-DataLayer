@@ -25,7 +25,8 @@ namespace BitWaves.Data.DML
         {
             Contract.NotNull(parentPath, nameof(parentPath));
 
-            var updateDefinitions = GetType().GetProperties(BindingFlags.Public)
+            var updateDefinitions = GetType().GetRuntimeProperties()
+                                             .Where(prop => prop.GetMethod.IsPublic)
                                              .Select(member => ResolveMemberUpdateDefinition(member, parentPath))
                                              .Where(x => x != null)
                                              .ToList();
@@ -53,18 +54,18 @@ namespace BitWaves.Data.DML
         /// <summary>
         /// 获取当前数据更新模型上的给定成员上的数据更新定义。
         /// </summary>
-        /// <param name="member">当前数据更新模型上的成员。</param>
+        /// <param name="property">当前数据更新模型上的属性成员。</param>
         /// <param name="parentPath">从更新模型的根到当前更新模型的父节点的路径。</param>
         /// <returns>当前数据更新模型上的给定成员上的数据更新定义。若给定的成员没有任何更新数据，返回 null。</returns>
         /// <exception cref="ArgumentNullException">
-        ///     <paramref name="member"/> 为 null。
+        ///     <paramref name="property"/> 为 null。
         /// </exception>
-        private UpdateDefinition<TRootEntity> ResolveMemberUpdateDefinition(MemberInfo member, ObjectPath parentPath)
+        private UpdateDefinition<TRootEntity> ResolveMemberUpdateDefinition(PropertyInfo property, ObjectPath parentPath)
         {
-            Contract.NotNull(member, nameof(member));
+            Contract.NotNull(property, nameof(property));
 
             // 如果成员的值是一个 Maybe<T> 类型，则将其展开为内部值
-            var memberValue = GetMemberValue(member);
+            var memberValue = property.GetValue(this);
             if (memberValue != null && MaybeUtils.IsMaybe(memberValue))
             {
                 var maybe = MaybeUtils.Unbox(memberValue);
@@ -80,36 +81,12 @@ namespace BitWaves.Data.DML
 
             if (memberValue is UpdateInfo<TRootEntity> memberUpdateInfo)
             {
-                var currentPath = parentPath.Push(member.Name);
+                var currentPath = parentPath.Push(property.Name);
                 return memberUpdateInfo.CreateUpdateDefinition(currentPath);
             }
 
-            return member.GetCustomAttribute<UpdateVerbAttribute>()
-                         ?.Resolve<TRootEntity>(member, memberValue, parentPath);
-        }
-
-        /// <summary>
-        /// 获取给定成员的值。
-        /// </summary>
-        /// <param name="member">要获取值的成员定义。</param>
-        /// <returns>给定成员的值。</returns>
-        /// <exception cref="ArgumentNullException"><paramref name="member"/> 为 null。</exception>
-        /// <exception cref="ArgumentException"><paramref name="member"/> 既不是一个数据字段也不是一个属性。</exception>
-        private object GetMemberValue(MemberInfo member)
-        {
-            Contract.NotNull(member, nameof(member));
-
-            switch (member)
-            {
-                case FieldInfo field:
-                    return field.GetValue(this);
-
-                case PropertyInfo property:
-                    return property.GetValue(this);
-
-                default:
-                    throw new ArgumentException($"{nameof(member)} is neither a field nor a property.", nameof(member));
-            }
+            return property.GetCustomAttribute<UpdateVerbAttribute>()
+                         ?.Resolve<TRootEntity>(property, memberValue, parentPath);
         }
 
         /// <summary>

@@ -106,6 +106,25 @@ namespace BitWaves.Data.UnitTest
         }
 
         [Test]
+        public void TestGetInnerTypeNull()
+        {
+            Assert.Throws<ArgumentNullException>(() => MaybeUtils.GetInnerType(null));
+        }
+
+        [Test]
+        public void TestGetInnerTypeNonMaybe()
+        {
+            Assert.Throws<ArgumentException>(() => MaybeUtils.GetInnerType(typeof(int)));
+            Assert.Throws<ArgumentException>(() => MaybeUtils.GetInnerType(typeof(Maybe<>)));
+        }
+
+        [Test]
+        public void TestGetInnerType()
+        {
+            Assert.AreEqual(typeof(int), MaybeUtils.GetInnerType(typeof(Maybe<int>)));
+        }
+
+        [Test]
         public void TestIsMaybeNull()
         {
             Assert.Throws<ArgumentNullException>(() => MaybeUtils.IsMaybe(null));

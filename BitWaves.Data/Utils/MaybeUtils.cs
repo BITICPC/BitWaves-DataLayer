@@ -37,6 +37,25 @@ namespace BitWaves.Data.Utils
         }
 
         /// <summary>
+        /// 获取给定的 <see cref="Maybe{T}"/> 类型包装的内部类型。
+        /// </summary>
+        /// <param name="maybeType"><see cref="Maybe{T}"/> 类型。</param>
+        /// <returns>给定的 <see cref="Maybe{T}"/> 类型包装的内部类型。</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="maybeType"/> 为 null。</exception>
+        /// <exception cref="ArgumentException">
+        ///     <see cref="maybeType"/> 不是一个 <see cref="Maybe{T}"/> 类型。
+        /// </exception>
+        public static Type GetInnerType(Type maybeType)
+        {
+            Contract.NotNull(maybeType, nameof(maybeType));
+
+            if (!IsMaybeType(maybeType))
+                throw new ArgumentException($"{maybeType} is not a maybe type.", nameof(maybeType));
+
+            return maybeType.GetGenericArguments()[0];
+        }
+
+        /// <summary>
         /// 检查给定的对象是否为一个装箱的 <see cref="Maybe{T}"/> 实例。
         /// </summary>
         /// <param name="value">要检查的对象。</param>

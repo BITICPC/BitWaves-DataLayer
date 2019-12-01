@@ -45,12 +45,12 @@ namespace BitWaves.Data
         /// <summary>
         /// 输入文件的扩展名。
         /// </summary>
-        private const string InputFileExtension = "in";
+        private const string InputFileExtension = ".in";
 
         /// <summary>
         /// 答案文件的扩展名。
         /// </summary>
-        private const string AnswerFileExtension = "ans";
+        private const string AnswerFileExtension = ".ans";
 
         /// <summary>
         /// 答案检查器源文件的文件名，不包含扩展名。

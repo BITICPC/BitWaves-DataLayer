@@ -8,10 +8,22 @@ namespace BitWaves.Data.Entities
     public sealed class ProblemJudgeInfo
     {
         /// <summary>
+        /// 默认的时间限制。
+        /// </summary>
+        private const int DefaultTimeLimit = 1000;
+
+        /// <summary>
+        /// 默认的内存限制。
+        /// </summary>
+        private const int DefaultMemoryLimit = 256;
+
+        /// <summary>
         /// 初始化 <see cref="ProblemJudgeInfo"/> 类的新实例。
         /// </summary>
         internal ProblemJudgeInfo()
         {
+            TimeLimit = DefaultTimeLimit;
+            MemoryLimit = DefaultMemoryLimit;
         }
 
         /// <summary>

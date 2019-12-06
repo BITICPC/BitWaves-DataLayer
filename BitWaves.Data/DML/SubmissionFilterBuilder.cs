@@ -32,13 +32,13 @@ namespace BitWaves.Data.DML
         }
 
         /// <summary>
-        /// 筛选给定的语言。
+        /// 筛选给定的语言标识符。
         /// </summary>
-        /// <param name="languageId">要筛选的语言的 ID。</param>
+        /// <param name="identifier">要筛选的语言的标识符。</param>
         /// <returns></returns>
-        public SubmissionFilterBuilder Language(ObjectId languageId)
+        public SubmissionFilterBuilder Language(string identifier)
         {
-            AddFilter(Builders<Submission>.Filter.Eq(s => s.LanguageId, languageId));
+            AddFilter(Builders<Submission>.Filter.Eq(s => s.Language.Identifier, identifier));
             return this;
         }
 

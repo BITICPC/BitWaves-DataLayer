@@ -24,7 +24,7 @@ namespace BitWaves.Data.DML
             var sorts = new[]
             {
                 Builders<Announcement>.Sort.Descending(a => a.IsPinned),
-                Builders<Announcement>.Sort.Descending(a => a.LastUpdateTime)
+                Builders<Announcement>.Sort.Descending(a => a.CreationTime)
             };
 
             return find.Sort(Builders<Announcement>.Sort.Combine(sorts));

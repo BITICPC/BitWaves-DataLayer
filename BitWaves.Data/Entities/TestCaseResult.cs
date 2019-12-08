@@ -31,6 +31,11 @@ namespace BitWaves.Data.Entities
         public string InputView { get; set; }
 
         /// <summary>
+        /// 获取或设置答案数据的视图。
+        /// </summary>
+        public string AnswerView { get; set; }
+
+        /// <summary>
         /// 获取或设置输出数据的视图。
         /// </summary>
         public string OutputView { get; set; }

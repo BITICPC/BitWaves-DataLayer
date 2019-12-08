@@ -6,6 +6,7 @@ using System.Linq.Expressions;
 using System.Threading.Tasks;
 using BitWaves.Data.DML;
 using BitWaves.Data.Entities;
+using BitWaves.Data.Extensions;
 using MongoDB.Bson;
 using MongoDB.Driver;
 
@@ -69,6 +70,22 @@ namespace BitWaves.Data.Repositories
         protected override FilterDefinition<Problem> GetKeyFilter(ObjectId key)
         {
             return Builders<Problem>.Filter.Eq(p => p.Id, key);
+        }
+
+        /// <summary>
+        /// 在数据集中查找具有指定的键的题目实体对象并返回。返回的 <see cref="Problem"/> 对象不包含有效的
+        /// <see cref="Problem.Description"/> 属性值。
+        /// </summary>
+        /// <param name="key">要查找的题目的 ID。</param>
+        /// <returns>找到的题目实体对象。若不存在这样的题目实体对象，返回 null。</returns>
+        /// <exception cref="RepositoryException">访问底层数据源时出现错误。</exception>
+        public async Task<Problem> FindOneWithoutDescriptionAsync(ObjectId key)
+        {
+            return await ThrowRepositoryExceptionOnErrorAsync(
+                async (collection, _) => await collection.Find(GetKeyFilter(key))
+                                                         .Project(
+                                                             Builders<Problem>.Projection.Exclude(p => p.Description))
+                                                         .FirstEntityOrDefaultAsync<Problem>());
         }
 
         /// <summary>
@@ -248,6 +265,22 @@ namespace BitWaves.Data.Repositories
         }
 
         /// <summary>
+        /// 查询指定题目的测试数据集在 GridFS 中的 ID。
+        /// </summary>
+        /// <param name="key">要查询的题目的 ID。</param>
+        /// <returns>
+        /// 指定的题目的测试数据集在 GridFS 中的 ID。如果没有这样的题目或者题目不包含有效的测试数据集，返回 null。
+        /// </returns>
+        /// <exception cref="RepositoryException">访问底层数据源时出现错误。</exception>
+        public async Task<ObjectId?> GetProblemTestDataArchiveIdAsync(ObjectId key)
+        {
+            return await ThrowRepositoryExceptionOnErrorAsync(
+                async (collection, _) => await collection.Find(GetKeyFilter(key))
+                                                         .Project(p => p.JudgeInfo.TestDataArchiveFileId)
+                                                         .FirstOrDefaultAsync());
+        }
+
+        /// <summary>
         /// 创建包含给定的表达式作为映射表达式的 <see cref="FindOneAndUpdateOptions{Problem, TProjection}"/> 对象。该方法主要
         /// 用于引导编译器推导 <typeparamref name="TProjection"/> 类型参数。
         /// </summary>
@@ -358,6 +391,19 @@ namespace BitWaves.Data.Repositories
                         await context.ProblemTestDataArchives.DeleteAsync(archiveId.Value);
                     }
                 });
+        }
+
+        /// <summary>
+        /// 将指定的测试数据包下载到指定的流中。
+        /// </summary>
+        /// <param name="archiveId">要下载的测试数据包的 ID。</param>
+        /// <param name="output">输出流。</param>
+        /// <exception cref="RepositoryException">访问底层数据源时出现错误。</exception>
+        public async Task DownloadTestDataArchive(ObjectId archiveId, Stream output)
+        {
+            await ThrowRepositoryExceptionOnErrorAsync(
+                async (_, context) => await context.ProblemTestDataArchives
+                                                   .DownloadToStreamAsync(archiveId, output));
         }
     }
 }

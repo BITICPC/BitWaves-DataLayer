@@ -46,6 +46,11 @@ namespace BitWaves.Data.Entities
         BadSystemCall,
 
         /// <summary>
+        /// 提交的题目不包含有效的测试数据。
+        /// </summary>
+        NoTestData,
+
+        /// <summary>
         /// 自定义答案检查器出错。
         /// </summary>
         CheckerFailed,

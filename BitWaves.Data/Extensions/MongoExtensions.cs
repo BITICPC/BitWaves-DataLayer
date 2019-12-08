@@ -71,6 +71,30 @@ namespace BitWaves.Data.Extensions
         }
 
         /// <summary>
+        /// 获取给定的 <see cref="IAsyncCursorSource{BsonDocument"/> 异步游标所迭代的到的第一个 <see cref="BsonDocument"/>
+        /// 对象，并将该对象反序列化为给定的实体对象类型。
+        /// </summary>
+        /// <param name="source">包含数据的异步游标。</param>
+        /// <typeparam name="TEntity">要转换到的实体对象类型。</typeparam>
+        /// <returns>
+        /// 给定的异步游标所迭代到的第一个实体对象。如果给定的异步游标无法迭代出任何对象，返回
+        /// <code>default(<typeparamref name="TEntity"/>)</code>。
+        /// </returns>
+        public static async Task<TEntity> FirstEntityOrDefaultAsync<TEntity>(
+            this IAsyncCursorSource<BsonDocument> source)
+        {
+            Contract.NotNull(source, nameof(source));
+
+            var bsonDoc = await source.FirstOrDefaultAsync();
+            if (Equals(bsonDoc, default(TEntity)))
+            {
+                return default;
+            }
+
+            return BsonSerializer.Deserialize<TEntity>(bsonDoc);
+        }
+
+        /// <summary>
         /// 从给定的查询会话中读取所有的 <see cref="BsonDocument"/> 对象，将其转换为给定的实体对象后作为列表返回。
         /// </summary>
         /// <param name="find">查询会话。</param>

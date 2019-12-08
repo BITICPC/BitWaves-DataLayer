@@ -143,5 +143,18 @@ namespace BitWaves.Data.Repositories
 
             return PasswordUtils.Challenge(passwordHash, password);
         }
+
+        /// <summary>
+        /// 在数据集中查询有多少个用户的 AC 题目数量大于指定的阈值。
+        /// </summary>
+        /// <param name="threshold">AC 题目数量阈值。</param>
+        /// <returns>有多少个用户的 AC 题目数量大于指定的阈值。</returns>
+        /// <exception cref="RepositoryException">访问底层数据源时出现错误。</exception>
+        public async Task<long> CountUsersWithMoreAcceptedProblemsAsync(int threshold)
+        {
+            return await ThrowRepositoryExceptionOnErrorAsync(
+                async (collection, _) => await collection.CountDocumentsAsync(
+                    Builders<User>.Filter.Gt(u => u.TotalProblemsAccepted, threshold)));
+        }
     }
 }

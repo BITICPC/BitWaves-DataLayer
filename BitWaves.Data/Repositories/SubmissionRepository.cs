@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using BitWaves.Data.DML;
 using BitWaves.Data.Entities;
+using BitWaves.Data.Extensions;
 using MongoDB.Bson;
 using MongoDB.Driver;
 
@@ -41,9 +43,9 @@ namespace BitWaves.Data.Repositories
                     new CreateIndexModel<Submission>(Builders<Submission>.IndexKeys.Hashed(sub => sub.Author)),
                     // ProblemId 上的递增索引
                     new CreateIndexModel<Submission>(Builders<Submission>.IndexKeys.Ascending(sub => sub.ProblemId)),
-                    // Language.Identifier 上的哈希索引
+                    // LanguageTriple.Identifier 上的哈希索引
                     new CreateIndexModel<Submission>(
-                        Builders<Submission>.IndexKeys.Hashed(sub => sub.Language.Identifier)),
+                        Builders<Submission>.IndexKeys.Hashed(sub => sub.LanguageTriple.Identifier)),
                     // CreationTime 上的递减索引
                     new CreateIndexModel<Submission>(
                         Builders<Submission>.IndexKeys.Descending(sub => sub.CreationTime)),
@@ -56,6 +58,72 @@ namespace BitWaves.Data.Repositories
 
                 await collection.Indexes.CreateManyAsync(indexesList);
             }).Wait();
+        }
+
+        /// <summary>
+        /// 在数据集中查找被给定的提交所引用的题目的实体对象，并将其与相应的 <see cref="Submission"/> 对象关联起来。
+        /// </summary>
+        /// <param name="submissions">提交实体对象。</param>
+        /// <exception cref="ArgumentNullException"><paramref name="submissions"/> 为 null。</exception>
+        /// <exception cref="RepositoryException">访问底层数据源时发生错误。</exception>
+        private async Task LookupRelatedProblems(IEnumerable<Submission> submissions)
+        {
+            Contract.NotNull(submissions, nameof(submissions));
+
+            var submissionsList = submissions.ToList();
+            var problemIds = submissionsList.Select(s => s.ProblemId);
+            var problems = await ThrowRepositoryExceptionOnErrorAsync(
+                async (_, context) => await context.Problems.Find(Builders<Problem>.Filter.In(p => p.Id, problemIds))
+                                                   .Project(Builders<Problem>.Projection.Exclude(p => p.Description))
+                                                   .ToEntityListAsync());
+            var problemLookup = problems.ToDictionary(p => p.Id);
+
+            foreach (var s in submissionsList)
+            {
+                if (problemLookup.TryGetValue(s.ProblemId, out var p))
+                {
+                    s.Problem = p;
+                }
+            }
+        }
+
+        /// <inheritdoc />
+        public override async Task<Submission> FindOneAsync(ObjectId key)
+        {
+            var submission = await FindOneWithoutProblemAsync(key);
+            if (submission == null)
+            {
+                return null;
+            }
+
+            await LookupRelatedProblems(new[] { submission });
+            return submission;
+        }
+
+        /// <summary>
+        /// 根据给定的提交 ID 查找提交实体对象。返回的提交实体对象中不包含有效的 <see cref="Submission.Problem"/> 属性值。
+        /// </summary>
+        /// <param name="key">要查找的提交的 ID。</param>
+        /// <returns>根据给定的提交 ID 查找到的提交实体对象。若没有这样的提交，返回 null。</returns>
+        /// <exception cref="RepositoryException">访问底层数据源时发生错误。</exception>
+        public async Task<Submission> FindOneWithoutProblemAsync(ObjectId key)
+        {
+            return await base.FindOneAsync(key);
+        }
+
+        /// <inheritdoc />
+        public override async Task<FindResult<Submission>> FindManyAsync(SubmissionFindPipeline pipeline)
+        {
+            Contract.NotNull(pipeline, nameof(pipeline));
+
+            var submissions = await base.FindManyAsync(pipeline);
+
+            if (pipeline.IncludeProblems)
+            {
+                await LookupRelatedProblems(submissions.ResultSet);
+            }
+
+            return submissions;
         }
 
         /// <summary>

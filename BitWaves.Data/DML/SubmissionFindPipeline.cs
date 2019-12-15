@@ -16,6 +16,7 @@ namespace BitWaves.Data.DML
         /// <exception cref="ArgumentNullException"><paramref name="filterBuilder"/> 为 null。</exception>
         public SubmissionFindPipeline(SubmissionFilterBuilder filterBuilder) : base(filterBuilder)
         {
+            IncludeProblems = true;
         }
 
         /// <summary>
@@ -27,6 +28,11 @@ namespace BitWaves.Data.DML
         /// 获取或设置是否按照降序进行排序。
         /// </summary>
         public bool SortByDescending { get; set; }
+
+        /// <summary>
+        /// 获取或设置是否在查询结果中包含有效的 <see cref="Submission.Problem"/> 属性值。
+        /// </summary>
+        public bool IncludeProblems { get; set; }
 
         /// <inheritdoc />
         protected override IFindFluent<Submission, Submission> Sort(IFindFluent<Submission, Submission> find)

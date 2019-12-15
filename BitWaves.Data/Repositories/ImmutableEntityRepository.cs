@@ -109,7 +109,7 @@ namespace BitWaves.Data.Repositories
         }
 
         /// <inheritdoc />
-        public async Task InsertOneAsync(TEntity entity)
+        public virtual async Task InsertOneAsync(TEntity entity)
         {
             Contract.NotNull(entity, nameof(entity));
 
@@ -118,7 +118,7 @@ namespace BitWaves.Data.Repositories
         }
 
         /// <inheritdoc />
-        public async Task InsertManyAsync(IEnumerable<TEntity> entities)
+        public virtual async Task InsertManyAsync(IEnumerable<TEntity> entities)
         {
             Contract.NotNull(entities, nameof(entities));
 
@@ -127,7 +127,7 @@ namespace BitWaves.Data.Repositories
         }
 
         /// <inheritdoc />
-        public async Task<bool> DeleteOneAsync(TKey key)
+        public virtual async Task<bool> DeleteOneAsync(TKey key)
         {
             var filter = GetKeyFilter(key);
             return await ThrowRepositoryExceptionOnErrorAsync(
@@ -139,7 +139,7 @@ namespace BitWaves.Data.Repositories
         }
 
         /// <inheritdoc />
-        public async Task<TEntity> FindOneAsync(TKey key)
+        public virtual async Task<TEntity> FindOneAsync(TKey key)
         {
             var filter = GetKeyFilter(key);
             return await ThrowRepositoryExceptionOnErrorAsync(
@@ -147,7 +147,7 @@ namespace BitWaves.Data.Repositories
         }
 
         /// <inheritdoc />
-        public async Task<FindResult<TEntity>> FindManyAsync(TFindPipeline pipeline)
+        public virtual async Task<FindResult<TEntity>> FindManyAsync(TFindPipeline pipeline)
         {
             Contract.NotNull(pipeline, nameof(pipeline));
 
@@ -156,12 +156,20 @@ namespace BitWaves.Data.Repositories
         }
 
         /// <inheritdoc />
-        public async Task<long> CountAsync(TFilterBuilder filterBuilder)
+        public virtual async Task<long> CountAsync(TFilterBuilder filterBuilder)
         {
             Contract.NotNull(filterBuilder, nameof(filterBuilder));
 
             return await ThrowRepositoryExceptionOnErrorAsync(
                 async (collection, _) => await collection.Find(filterBuilder).CountDocumentsAsync());
+        }
+
+        /// <inheritdoc />
+        public virtual async Task<bool> ExistAsync(TKey key)
+        {
+            var count = await ThrowRepositoryExceptionOnErrorAsync(
+                async (collection, _) => await collection.Find(GetKeyFilter(key)).CountDocumentsAsync());
+            return count == 1;
         }
     }
 }

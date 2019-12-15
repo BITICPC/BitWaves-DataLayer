@@ -81,5 +81,13 @@ namespace BitWaves.Data.Repositories
         /// <exception cref="ArgumentNullException"><paramref name="filterBuilder"/> 为 null。</exception>
         /// <exception cref="RepositoryException">访问底层数据源时出现错误。</exception>
         Task<long> CountAsync(TFilterBuilder filterBuilder);
+
+        /// <summary>
+        /// 检查指定的实体对象 ID 是否存在于当前的数据集中。
+        /// </summary>
+        /// <param name="key">要检查的实体对象 ID。</param>
+        /// <returns>指定的实体对象 ID 是否存在于当前的数据集中。</returns>
+        /// <exception cref="RepositoryException">访问底层数据源时出现错误。</exception>
+        Task<bool> ExistAsync(TKey key);
     }
 }

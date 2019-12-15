@@ -37,7 +37,7 @@ namespace BitWaves.Data.Repositories
         }
 
         /// <inheritdoc />
-        public async Task<bool> UpdateOneAsync(TKey key, TUpdateInfo updateInfo)
+        public virtual async Task<bool> UpdateOneAsync(TKey key, TUpdateInfo updateInfo)
         {
             Contract.NotNull(updateInfo, nameof(updateInfo));
 

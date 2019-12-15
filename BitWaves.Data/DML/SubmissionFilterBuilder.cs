@@ -38,7 +38,7 @@ namespace BitWaves.Data.DML
         /// <returns></returns>
         public SubmissionFilterBuilder Language(string identifier)
         {
-            AddFilter(Builders<Submission>.Filter.Eq(s => s.Language.Identifier, identifier));
+            AddFilter(Builders<Submission>.Filter.Eq(s => s.LanguageTriple.Identifier, identifier));
             return this;
         }
 

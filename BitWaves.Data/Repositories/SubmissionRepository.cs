@@ -14,7 +14,7 @@ namespace BitWaves.Data.Repositories
     /// 提交数据集。
     /// </summary>
     public sealed class SubmissionRepository
-        : EntityRepository<Submission, ObjectId, SubmissionUpdateInfo, SubmissionFilterBuilder, SubmissionFindPipeline>
+        : ImmutableEntityRepository<Submission, ObjectId, SubmissionFilterBuilder, SubmissionFindPipeline>
     {
         /// <summary>
         /// 初始化 <see cref="SubmissionRepository"/> 类的新实例。
@@ -159,6 +159,45 @@ namespace BitWaves.Data.Repositories
                         Builders<Submission>.Update.Set(s => s.Status, JudgeStatus.Finished),
                         Builders<Submission>.Update.Set(s => s.Result, result))));
             return updateResult.MatchedCount == 1;
+        }
+
+        /// <summary>
+        /// 将指定的提交的评测状态重置为评测开始前的状态。
+        /// </summary>
+        /// <param name="key">需要重置评测状态的评测的 ID。</param>
+        /// <returns>是否成功地重置了将指定的提交的评测状态。</returns>
+        /// <exception cref="RepositoryException">访问底层数据源时发生错误。</exception>
+        public async Task<bool> ResetJudgeStatusAsync(ObjectId key)
+        {
+            var updateResult = await ThrowRepositoryExceptionOnErrorAsync(
+                async (collection, _) => await collection.UpdateOneAsync(
+                    GetKeyFilter(key),
+                    Builders<Submission>.Update.Combine(
+                        Builders<Submission>.Update.Set(s => s.JudgeTime, null),
+                        Builders<Submission>.Update.Set(s => s.Status, JudgeStatus.Pending),
+                        Builders<Submission>.Update.Set(s => s.Result, null))));
+            return updateResult.MatchedCount == 1;
+        }
+
+        /// <summary>
+        /// 将指定的提交的评测状态重置为评测开始前的状态。
+        /// </summary>
+        /// <param name="keys">需要重置评测状态的评测的 ID。</param>
+        /// <returns>实际重置的提交的数量。</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="keys"/> 为 null。</exception>
+        /// <exception cref="RepositoryException">访问底层数据源时发生错误。</exception>
+        public async Task<long> ResetJudgeStatusAsync(IEnumerable<ObjectId> keys)
+        {
+            Contract.NotNull(keys, nameof(keys));
+
+            var updateResult = await ThrowRepositoryExceptionOnErrorAsync(
+                async (collection, _) => await collection.UpdateManyAsync(
+                    Builders<Submission>.Filter.In(s => s.Id, keys),
+                    Builders<Submission>.Update.Combine(
+                        Builders<Submission>.Update.Set(s => s.JudgeTime, null),
+                        Builders<Submission>.Update.Set(s => s.Status, JudgeStatus.Pending),
+                        Builders<Submission>.Update.Set(s => s.Result, null))));
+            return updateResult.MatchedCount;
         }
     }
 }

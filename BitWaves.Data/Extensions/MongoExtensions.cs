@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using BitWaves.Data.DML;
 using MongoDB.Bson;
@@ -17,13 +18,17 @@ namespace BitWaves.Data.Extensions
         /// <summary>
         /// 收集给定 <see cref="IAsyncCursor{T}"/> 中的数据到 <see cref="HashSet{T}"/> 中。
         /// </summary>
-        /// <param name="cursor">指向目标数据的 <see cref="IAsyncCursor{T}"/> 对象。</param>
+        /// <param name="source">指向目标数据的 <see cref="IAsyncCursor{T}"/> 对象。</param>
         /// <typeparam name="T">目标数据类型。</typeparam>
         /// <returns>收集到的 <see cref="HashSet{T}"/> 对象。</returns>
-        public static HashSet<T> ToHashSet<T>(this IAsyncCursor<T> cursor)
+        /// <exception cref="ArgumentNullException"><paramref name="source"/> 为 null。</exception>
+        public static async Task<HashSet<T>> ToHashSetAsync<T>(this IAsyncCursorSource<T> source)
         {
+            Contract.NotNull(source, nameof(source));
+
             var set = new HashSet<T>();
-            while (cursor.MoveNext())
+            var cursor = await source.ToCursorAsync();
+            while (await cursor.MoveNextAsync())
             {
                 foreach (var value in cursor.Current)
                 {
@@ -32,18 +37,6 @@ namespace BitWaves.Data.Extensions
             }
 
             return set;
-        }
-
-        /// <summary>
-        /// 测试给定的 MongoDB 数据集是否存在。
-        /// </summary>
-        /// <param name="collection">MongoDB 数据集。</param>
-        /// <typeparam name="T">数据集中的数据类型。</typeparam>
-        /// <returns>给定的数据集是否存在。</returns>
-        public static bool Exists<T>(this IMongoCollection<T> collection)
-        {
-            return collection.Database.ListCollectionNames().ToHashSet().Contains(
-                collection.CollectionNamespace.CollectionName);
         }
 
         /// <summary>
@@ -95,6 +88,22 @@ namespace BitWaves.Data.Extensions
         }
 
         /// <summary>
+        /// 将给定的查找会话中找到的实体对象收集到 <see cref="HashSet{T}"/> 中。
+        /// </summary>
+        /// <param name="find">查找会话。</param>
+        /// <typeparam name="TEntity">实体对象类型。</typeparam>
+        /// <typeparam name="TDocument">查找会话的结果对象类型。</typeparam>
+        /// <returns>包含给定的查找会话中的实体对象的 <see cref="HashSet{T}"/> 对象。</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="find"/> 为 null。</exception>
+        public static async Task<HashSet<TDocument>> ToHashSetAsync<TEntity, TDocument>(
+            this IFindFluent<TEntity, TDocument> find)
+        {
+            Contract.NotNull(find, nameof(find));
+
+            return await ToHashSetAsync((IAsyncCursorSource<TDocument>) find);
+        }
+
+        /// <summary>
         /// 从给定的查询会话中读取所有的 <see cref="BsonDocument"/> 对象，将其转换为给定的实体对象后作为列表返回。
         /// </summary>
         /// <param name="find">查询会话。</param>
@@ -104,6 +113,8 @@ namespace BitWaves.Data.Extensions
         public static async Task<List<TEntity>> ToEntityListAsync<TEntity>(
             this IFindFluent<TEntity, BsonDocument> find)
         {
+            Contract.NotNull(find, nameof(find));
+
             return await ToEntityListAsync<TEntity>((IAsyncCursorSource<BsonDocument>) find);
         }
 
@@ -186,6 +197,23 @@ namespace BitWaves.Data.Extensions
             Contract.NotNull(pipeline, nameof(pipeline));
 
             return await pipeline.ExecuteAsync(collection);
+        }
+
+        public static async Task<long> CountDistinctByAsync<TEntity, TField>(
+            this IMongoCollection<TEntity> collection,
+            FilterDefinition<TEntity> filter,
+            Expression<Func<TEntity, TField>> field)
+        {
+            Contract.NotNull(collection, nameof(collection));
+            Contract.NotNull(filter, nameof(filter));
+            Contract.NotNull(field, nameof(field));
+
+            var countResult = await collection.Aggregate()
+                                              .Match(filter)
+                                              .Group(field, g => new { Id = g.Key })
+                                              .Count()
+                                              .FirstOrDefaultAsync();
+            return countResult?.Count ?? 0;
         }
     }
 }

@@ -13,6 +13,11 @@ namespace BitWaves.Data.Entities
         public Verdict Verdict { get; set; }
 
         /// <summary>
+        /// 获取或设置在编译过程中编译器的输出信息。
+        /// </summary>
+        public string CompilerMessage { get; set; }
+
+        /// <summary>
         /// 获取或设置用户程序在所有的测试用例中消耗的 CPU 时间的最大值，单位为毫秒。
         /// </summary>
         public int Time { get; set; }

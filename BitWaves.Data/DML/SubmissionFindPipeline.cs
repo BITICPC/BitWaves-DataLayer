@@ -17,6 +17,7 @@ namespace BitWaves.Data.DML
         public SubmissionFindPipeline(SubmissionFilterBuilder filterBuilder) : base(filterBuilder)
         {
             IncludeProblems = true;
+            SortByDescending = true;
         }
 
         /// <summary>

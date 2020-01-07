@@ -15,24 +15,12 @@ namespace BitWaves.Data
         internal TestDataArchiveMetadata()
         {
             TestCases = new List<TestCaseEntry>();
-            Checker = null;
-            Interactor = null;
         }
 
         /// <summary>
         /// 获取测试数据集中的所有测试用例。
         /// </summary>
         public List<TestCaseEntry> TestCases { get; }
-
-        /// <summary>
-        /// 获取包含答案检查器源代码的文件的 <see cref="TestDataArchiveEntry"/> 封装。
-        /// </summary>
-        public TestDataArchiveEntry Checker { get; internal set; }
-
-        /// <summary>
-        /// 获取包含交互器源代码的文件的 <see cref="TestDataArchiveEntry"/> 封装。
-        /// </summary>
-        public TestDataArchiveEntry Interactor { get; internal set; }
 
         /// <summary>
         /// 从给定的 ZIP 文件构造 <see cref="TestDataArchiveMetadata"/> 类的新实例。

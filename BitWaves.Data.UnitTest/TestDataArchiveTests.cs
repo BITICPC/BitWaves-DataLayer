@@ -32,7 +32,6 @@ namespace BitWaves.Data.UnitTest
             // |--|- test_2.ans
             var tempDir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
             Directory.CreateDirectory(tempDir);
-            File.WriteAllText(Path.Combine(tempDir, "checker.py"), "print(\"hello world\")");
             File.WriteAllText(Path.Combine(tempDir, "test_1.in"), "1 2\n");
             File.WriteAllText(Path.Combine(tempDir, "test_1.ans"), "3\n");
             Directory.CreateDirectory(Path.Combine(tempDir, "dir"));
@@ -72,12 +71,6 @@ namespace BitWaves.Data.UnitTest
         public void TestFromGoodArchive()
         {
             var archive = TestDataArchive.FromFile(_goodArchiveFileName);
-            Assert.IsNotNull(archive.CheckerSource);
-            Assert.IsNull(archive.InteractorSource);
-
-            var checkerEntry = archive.CheckerSource;
-            Assert.AreEqual("checker.py", checkerEntry.Name);
-
             var testCases = archive.TestCases.ToList();
             Assert.AreEqual(2, testCases.Count);
 

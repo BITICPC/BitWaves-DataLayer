@@ -49,32 +49,6 @@ namespace BitWaves.Data
         }
 
         /// <summary>
-        /// 若测试数据包中包含答案检查器源文件，获取该文件所对应的 <see cref="TestDataArchiveEntry"/> 对象；否则返回 null。
-        /// </summary>
-        /// <exception cref="ObjectDisposedException">当前对象已经被 dispose。</exception>
-        public TestDataArchiveEntry CheckerSource
-        {
-            get
-            {
-                EnsureNotDisposed();
-                return _meta.Checker;
-            }
-        }
-
-        /// <summary>
-        /// 若测试数据包中包含交互器源文件，获取该文件所对应的 <see cref="TestDataArchiveEntry"/> 对象；否则返回 null。
-        /// </summary>
-        /// <exception cref="ObjectDisposedException">当前对象已经被 dispose。</exception>
-        public TestDataArchiveEntry InteractorSource
-        {
-            get
-            {
-                EnsureNotDisposed();
-                return _meta.Interactor;
-            }
-        }
-
-        /// <summary>
         /// 检查当前对象是否被 dispose。如果当前对象已经被 dispose，抛出 <see cref="ObjectDisposedException"/> 异常。
         /// </summary>
         /// <exception cref="ObjectDisposedException">当前对象已经被 dispose。</exception>

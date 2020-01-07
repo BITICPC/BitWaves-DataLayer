@@ -27,16 +27,6 @@ namespace BitWaves.Data
             AnswerFile,
 
             /// <summary>
-            /// Entry 对应于一个答案检查器源文件。
-            /// </summary>
-            Checker,
-
-            /// <summary>
-            /// Entry 对应于一个交互器源文件。
-            /// </summary>
-            Interactor,
-
-            /// <summary>
             /// 无法得知 entry 的类型。
             /// </summary>
             Unknown
@@ -51,16 +41,6 @@ namespace BitWaves.Data
         /// 答案文件的扩展名。
         /// </summary>
         private const string AnswerFileExtension = ".ans";
-
-        /// <summary>
-        /// 答案检查器源文件的文件名，不包含扩展名。
-        /// </summary>
-        private const string CheckerFileName = "checker";
-
-        /// <summary>
-        /// 交互器源文件的文件名，不包含扩展名。
-        /// </summary>
-        private const string InteractorFileName = "interactor";
 
         /// <summary>
         /// 获取给定 <see cref="ZipArchiveEntry"/> 在测试数据集中的类型。
@@ -81,17 +61,6 @@ namespace BitWaves.Data
             if (string.Compare(extension, AnswerFileExtension, StringComparison.OrdinalIgnoreCase) == 0)
             {
                 return ArchiveEntryKind.AnswerFile;
-            }
-
-            var name = Path.GetFileNameWithoutExtension(entry.Name);
-            if (string.Compare(name, CheckerFileName, StringComparison.OrdinalIgnoreCase) == 0)
-            {
-                return ArchiveEntryKind.Checker;
-            }
-
-            if (string.Compare(name, InteractorFileName, StringComparison.OrdinalIgnoreCase) == 0)
-            {
-                return ArchiveEntryKind.Interactor;
             }
 
             return ArchiveEntryKind.Unknown;
@@ -150,12 +119,6 @@ namespace BitWaves.Data
 
                 case ArchiveEntryKind.AnswerFile:
                     return AddAnswerFileEntry(entry);
-
-                case ArchiveEntryKind.Checker:
-                    return AddCheckerEntry(entry);
-
-                case ArchiveEntryKind.Interactor:
-                    return AddInteractorEntry(entry);
 
                 default:
                     throw new ArgumentException($"存在无法归类的归档条目：\"{entry.FullName}\"");
@@ -224,56 +187,6 @@ namespace BitWaves.Data
                                                           new TestDataArchiveEntry(entry)));
             }
 
-            return this;
-        }
-
-        /// <summary>
-        /// 将给定的 <see cref="ZipArchiveEntry"/> 作为答案检查器源文件的 entry 添加到测试数据集中。
-        /// </summary>
-        /// <param name="entry">要添加的 <see cref="ZipArchiveEntry"/> 对象。</param>
-        /// <returns>返回当前的 <see cref="TestDataArchiveMetadataBuilder"/> 对象。</returns>
-        /// <exception cref="ArgumentNullException"><paramref name="entry"/> 为 null。</exception>
-        /// <exception cref="InvalidOperationException">已经存在一个答案检查器或交互器的 entry。</exception>
-        private TestDataArchiveMetadataBuilder AddCheckerEntry(ZipArchiveEntry entry)
-        {
-            Contract.NotNull(entry, nameof(entry));
-
-            if (_metadata.Checker != null)
-            {
-                throw new InvalidOperationException("在尝试添加新的答案检查器时发现已经存在一个答案检查器。");
-            }
-
-            if (_metadata.Interactor != null)
-            {
-                throw new InvalidOperationException("在尝试添加新的答案检查器时发现已经存在一个交互器。");
-            }
-
-            _metadata.Checker = new TestDataArchiveEntry(entry);
-            return this;
-        }
-
-        /// <summary>
-        /// 将给定的 <see cref="ZipArchiveEntry"/> 作为交互器源文件的 entry 添加到测试数据集中。
-        /// </summary>
-        /// <param name="entry">要添加的 <see cref="ZipArchiveEntry"/> 对象。</param>
-        /// <returns>返回当前的 <see cref="TestDataArchiveMetadataBuilder"/> 对象。</returns>
-        /// <exception cref="ArgumentNullException"><paramref name="entry"/> 为 null。</exception>
-        /// <exception cref="InvalidOperationException">已经存在一个答案检查器或交互器的 entry。</exception>
-        private TestDataArchiveMetadataBuilder AddInteractorEntry(ZipArchiveEntry entry)
-        {
-            Contract.NotNull(entry, nameof(entry));
-
-            if (_metadata.Checker != null)
-            {
-                throw new InvalidOperationException("在尝试添加新的交互器时发现已经存在一个答案检查器。");
-            }
-
-            if (_metadata.Interactor != null)
-            {
-                throw new InvalidOperationException("在尝试添加新的交互器时发现已经存在一个交互器。");
-            }
-
-            _metadata.Interactor = new TestDataArchiveEntry(entry);
             return this;
         }
     }
